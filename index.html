@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BITMOOD — Os 7 pilares que movem o Bitcoin</title>
+<meta name="description" content="Análise de Bitcoin e economia pelos 7 pilares: baleias, instituições, técnica, macro, on-chain, mineradores e derivativos.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 44%22><text y=%2234%22 font-size=%2234%22>🐋</text></svg>">
+<style>
+  :root{
+    --abissal:#071B2E; --profundo:#103058; --azul:#5B95CE; --prata:#A8C4DC;
+    --laranja:#F7931A; --alta:#2ED47A; --baixa:#FF5C5C; --neutro:#8FA6C4; --texto:#F2F6FB;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--abissal); color:var(--texto);
+    font-family:-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+    line-height:1.5;
+  }
+  a{color:var(--azul)}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px}
+
+  header{
+    position:sticky; top:0; z-index:10;
+    background:rgba(7,27,46,.85); backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(91,149,206,.15);
+  }
+  nav{display:flex; align-items:center; justify-content:space-between; padding:16px 0}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:1px; font-size:19px}
+  .brand svg{width:34px; height:auto; display:block}
+  nav .links{display:flex; gap:28px; font-size:14px; color:var(--neutro)}
+  nav .links a{color:var(--neutro); text-decoration:none}
+  nav .links a:hover{color:var(--texto)}
+  .btn{
+    display:inline-block; padding:11px 22px; border-radius:10px;
+    background:var(--azul); color:#04121f; font-weight:700; text-decoration:none;
+    font-size:14px; transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px); box-shadow:0 8px 24px rgba(91,149,206,.35)}
+  .btn.ghost{background:transparent; border:1px solid rgba(168,196,220,.4); color:var(--texto)}
+
+  .hero{padding:96px 0 72px; position:relative; overflow:hidden}
+  .hero::before{
+    content:""; position:absolute; inset:-20% -10% auto -10%; height:520px;
+    background:radial-gradient(ellipse at 30% 20%, rgba(91,149,206,.18), transparent 60%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700;
+    letter-spacing:1.5px; color:var(--azul); text-transform:uppercase;
+    background:rgba(91,149,206,.12); border:1px solid rgba(91,149,206,.3);
+    padding:6px 14px; border-radius:999px; margin-bottom:24px;
+  }
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--azul)}
+  h1{font-size:clamp(34px,5.4vw,58px); line-height:1.08; margin:0 0 22px; letter-spacing:-1px}
+  h1 .accent{color:var(--laranja)}
+  .lede{font-size:19px; color:var(--neutro); max-width:620px; margin:0 0 36px}
+  .cta-row{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:56px}
+
+  .hero-whale{display:flex; justify-content:center; padding:12px 0 8px}
+  .hero-whale svg{width:min(560px,86vw); height:auto; filter:drop-shadow(0 30px 60px rgba(0,0,0,.5))}
+
+  section{padding:72px 0}
+  .section-head{max-width:640px; margin:0 auto 44px; text-align:center}
+  .section-head .eyebrow{margin-bottom:14px}
+  h2{font-size:clamp(26px,3.4vw,36px); margin:0 0 14px; letter-spacing:-.5px}
+  .section-head p{color:var(--neutro); font-size:16px; margin:0}
+
+  .pilares{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+  @media(max-width:860px){.pilares{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.pilares{grid-template-columns:1fr}}
+  .pilar{
+    background:linear-gradient(160deg, rgba(16,48,88,.7), rgba(7,27,46,.7));
+    border:1px solid rgba(91,149,206,.18); border-radius:16px; padding:22px 18px;
+  }
+  .pilar .letra{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:38px; height:38px; border-radius:10px; background:rgba(91,149,206,.15);
+    color:var(--azul); font-weight:800; font-size:17px; margin-bottom:14px;
+  }
+  .pilar h3{font-size:15px; margin:0 0 6px; letter-spacing:.2px}
+  .pilar p{font-size:13.5px; color:var(--neutro); margin:0; line-height:1.5}
+
+  .metodo{
+    background:linear-gradient(145deg, rgba(16,48,88,.55), rgba(7,27,46,.9));
+    border:1px solid rgba(91,149,206,.16); border-radius:22px;
+    padding:48px 40px; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;
+  }
+  @media(max-width:760px){.metodo{grid-template-columns:1fr; padding:32px 24px}}
+  .metodo h2{margin-bottom:16px}
+  .metodo p{color:var(--neutro); font-size:15.5px; margin:0 0 14px}
+  .metodo ul{list-style:none; padding:0; margin:20px 0 0; display:flex; flex-direction:column; gap:12px}
+  .metodo li{display:flex; gap:12px; font-size:14.5px; color:var(--texto)}
+  .metodo li b{color:var(--azul)}
+  .checkmark{color:var(--alta); flex-shrink:0}
+
+  .produtos{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  @media(max-width:820px){.produtos{grid-template-columns:1fr}}
+  .produto{
+    border:1px solid rgba(91,149,206,.18); border-radius:18px; padding:28px 24px;
+    background:rgba(16,48,88,.35);
+  }
+  .produto .tag{
+    font-size:11.5px; font-weight:800; letter-spacing:1px; text-transform:uppercase;
+    color:var(--laranja); margin-bottom:12px; display:block;
+  }
+  .produto h3{margin:0 0 10px; font-size:19px}
+  .produto p{color:var(--neutro); font-size:14.5px; margin:0}
+
+  .newsletter{
+    text-align:center; background:radial-gradient(ellipse at center, rgba(91,149,206,.14), transparent 70%);
+    border-radius:24px; padding:56px 24px;
+  }
+  form.signup{
+    display:flex; gap:10px; max-width:440px; margin:28px auto 0; flex-wrap:wrap; justify-content:center;
+  }
+  form.signup input{
+    flex:1; min-width:220px; padding:13px 16px; border-radius:10px; border:1px solid rgba(168,196,220,.3);
+    background:rgba(7,27,46,.6); color:var(--texto); font-size:14.5px;
+  }
+  form.signup input::placeholder{color:var(--neutro)}
+  .fine{font-size:12.5px; color:var(--neutro); margin-top:14px}
+
+  footer{border-top:1px solid rgba(91,149,206,.15); padding:32px 0; margin-top:24px}
+  .foot-row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px}
+  .foot-brand{display:flex; align-items:center; gap:8px; font-weight:700; color:var(--neutro); font-size:14px}
+  .foot-brand svg{width:20px; height:auto}
+  .social{display:flex; gap:16px}
+  .social a{color:var(--neutro); font-size:13.5px; text-decoration:none}
+  .social a:hover{color:var(--texto)}
+  .disclaimer{font-size:12px; color:var(--neutro); opacity:.75; margin-top:18px; max-width:760px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="brand">
+        <svg viewBox="165 350 690 305" role="img" aria-label="BITMOOD">
+          <defs>
+            <linearGradient id="ngTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fc7ec"/><stop offset=".45" stop-color="#5f9fcb"/><stop offset="1" stop-color="#193f70"/></linearGradient>
+            <linearGradient id="ngTopDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2c6399"/><stop offset="1" stop-color="#0d2d55"/></linearGradient>
+            <linearGradient id="ngSilver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7f4ff"/><stop offset=".48" stop-color="#9cb3ca"/><stop offset="1" stop-color="#40546d"/></linearGradient>
+            <linearGradient id="ngBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2d6aa0"/><stop offset=".42" stop-color="#174a7e"/><stop offset="1" stop-color="#08274b"/></linearGradient>
+            <linearGradient id="ngBodyDeep" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#174c7f"/><stop offset="1" stop-color="#061e3c"/></linearGradient>
+            <linearGradient id="ngTailLeft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b6dcf3"/><stop offset=".55" stop-color="#4b84ae"/><stop offset="1" stop-color="#0f3764"/></linearGradient>
+            <linearGradient id="ngTailRight" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef7ff"/><stop offset=".52" stop-color="#a6bfd4"/><stop offset="1" stop-color="#345a79"/></linearGradient>
+          </defs>
+          <path d="M185 436 L281 420 L392 419 L581 474 L418 532 Z" fill="url(#ngTop)"/>
+          <path d="M185 436 L281 420 L418 532 Z" fill="url(#ngTopDark)"/>
+          <path d="M281 420 L392 419 L581 474 L418 518 Z" fill="url(#ngTop)" opacity=".72"/>
+          <path d="M186 446 L250 551 L405 617 L344 532 Z" fill="url(#ngSilver)"/>
+          <path d="M186 446 L344 532 L314 572 L250 551 Z" fill="#65798f" opacity=".72"/>
+          <path d="M250 551 L314 572 L405 617 L344 532 Z" fill="#263e59" opacity=".74"/>
+          <path d="M364 530 L397 581 L668 457 L418 548 Z" fill="url(#ngSilver)"/>
+          <path d="M397 581 L414 588 L668 457 L418 548 Z" fill="#3b5269" opacity=".25"/>
+          <path d="M414 588 L568 595 L729 519 L764 450 L709 462 L655 487 Z" fill="url(#ngBody)"/>
+          <path d="M483 565 L568 595 L729 519 L764 450 L655 487 Z" fill="url(#ngBodyDeep)" opacity=".73"/>
+          <path d="M414 588 L463 625 L546 636 L485 574 Z" fill="url(#ngSilver)"/>
+          <path d="M463 625 L546 636 L485 574 Z" fill="#173653" opacity=".46"/>
+          <path d="M706 462 L762 452 L729 519 L687 535 Z" fill="url(#ngBodyDeep)"/>
+          <path d="M632 371 L721 409 L706 461 L651 423 Z" fill="url(#ngTailLeft)"/>
+          <path d="M736 408 L835 370 L807 423 L714 461 Z" fill="url(#ngTailRight)"/>
+          <path d="M706 461 L714 461 L721 409 Z" fill="#082b51" opacity=".68"/>
+        </svg>
+        BITMOOD
+      </div>
+      <div class="links">
+        <a href="#pilares">Os 7 pilares</a>
+        <a href="#metodo">Método</a>
+        <a href="#produtos">Produtos</a>
+      </div>
+      <a class="btn ghost" href="#newsletter">Assinar newsletter</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow"><span class="dot"></span> Análise · não recomendação</span>
+      <h1>O Bitcoin não se move por<br>um motivo. Move-se por <span class="accent">7</span>.</h1>
+      <p class="lede">BITMOOD é um método de leitura do Bitcoin pelos 7 pilares que realmente
+        movem o preço — baleias, instituições, técnica, macro, on-chain, mineradores e derivativos.
+        Sem promessa de retorno. Com dado, contexto e probabilidade.</p>
+      <div class="cta-row">
+        <a class="btn" href="#newsletter">Receber a newsletter</a>
+        <a class="btn ghost" href="#metodo">Entender o método</a>
+      </div>
+
+      <div class="hero-whale">
+        <svg viewBox="165 350 690 305" role="img" aria-label="Baleia BITMOOD">
+          <defs>
+            <linearGradient id="hgTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fc7ec"/><stop offset=".45" stop-color="#5f9fcb"/><stop offset="1" stop-color="#193f70"/></linearGradient>
+            <linearGradient id="hgTopDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2c6399"/><stop offset="1" stop-color="#0d2d55"/></linearGradient>
+            <linearGradient id="hgSilver" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7f4ff"/><stop offset=".48" stop-color="#9cb3ca"/><stop offset="1" stop-color="#40546d"/></linearGradient>
+            <linearGradient id="hgBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2d6aa0"/><stop offset=".42" stop-color="#174a7e"/><stop offset="1" stop-color="#08274b"/></linearGradient>
+            <linearGradient id="hgBodyDeep" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#174c7f"/><stop offset="1" stop-color="#061e3c"/></linearGradient>
+            <linearGradient id="hgTailLeft" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b6dcf3"/><stop offset=".55" stop-color="#4b84ae"/><stop offset="1" stop-color="#0f3764"/></linearGradient>
+            <linearGradient id="hgTailRight" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef7ff"/><stop offset=".52" stop-color="#a6bfd4"/><stop offset="1" stop-color="#345a79"/></linearGradient>
+          </defs>
+          <path d="M185 436 L281 420 L392 419 L581 474 L418 532 Z" fill="url(#hgTop)" stroke="#7bb4dc" stroke-width="0.7"/>
+          <path d="M185 436 L281 420 L418 532 Z" fill="url(#hgTopDark)" stroke="#2b6c9e" stroke-width="0.55"/>
+          <path d="M281 420 L392 419 L581 474 L418 518 Z" fill="url(#hgTop)" opacity="0.72"/>
+          <path d="M186 446 L250 551 L405 617 L344 532 Z" fill="url(#hgSilver)" stroke="#8299b1" stroke-width="0.65"/>
+          <path d="M186 446 L344 532 L314 572 L250 551 Z" fill="#65798f" opacity="0.72"/>
+          <path d="M250 551 L314 572 L405 617 L344 532 Z" fill="#263e59" opacity="0.74"/>
+          <path d="M364 530 L397 581 L668 457 L418 548 Z" fill="url(#hgSilver)" stroke="#d9ebf8" stroke-width="0.65"/>
+          <path d="M397 581 L414 588 L668 457 L418 548 Z" fill="#3b5269" opacity="0.25"/>
+          <path d="M414 588 L568 595 L729 519 L764 450 L709 462 L655 487 Z" fill="url(#hgBody)" stroke="#164f84" stroke-width="0.7"/>
+          <path d="M483 565 L568 595 L729 519 L764 450 L655 487 Z" fill="url(#hgBodyDeep)" opacity="0.73"/>
+          <path d="M414 588 L463 625 L546 636 L485 574 Z" fill="url(#hgSilver)" stroke="#6e89a4" stroke-width="0.65"/>
+          <path d="M463 625 L546 636 L485 574 Z" fill="#173653" opacity="0.46"/>
+          <path d="M706 462 L762 452 L729 519 L687 535 Z" fill="url(#hgBodyDeep)" stroke="#1b4f7a" stroke-width="0.6"/>
+          <path d="M632 371 L721 409 L706 461 L651 423 Z" fill="url(#hgTailLeft)" stroke="#7fc0ea" stroke-width="0.7"/>
+          <path d="M736 408 L835 370 L807 423 L714 461 Z" fill="url(#hgTailRight)" stroke="#bcd3e6" stroke-width="0.7"/>
+          <path d="M706 461 L714 461 L721 409 Z" fill="#082b51" opacity="0.68"/>
+          <path d="M185 436 L418 532 L581 474" fill="none" stroke="#b9def3" stroke-opacity="0.55" stroke-width="0.8"/>
+          <path d="M364 530 L397 581 L668 457" fill="none" stroke="#f0f7fc" stroke-opacity="0.55" stroke-width="0.8"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="pilares">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow"><span class="dot"></span> B-I-T-M-O-O-D</span>
+        <h2>Os 7 pilares</h2>
+        <p>Toda notícia, todo dado, mapeado num destes sete eixos — e na direção em que empurra o preço.</p>
+      </div>
+      <div class="pilares">
+        <div class="pilar"><span class="letra">B</span><h3>Big movers / Baleias</h3><p>Grandes detentores e seus movimentos; concentração e distribuição de moedas.</p></div>
+        <div class="pilar"><span class="letra">I</span><h3>Instituições</h3><p>Fundos, empresas, bancos e governos: ETFs, tesourarias, reservas estatais, fluxos.</p></div>
+        <div class="pilar"><span class="letra">T</span><h3>Análise Técnica</h3><p>Preço, tendência, suportes e resistências, indicadores.</p></div>
+        <div class="pilar"><span class="letra">M</span><h3>Macroeconomia</h3><p>Juros, inflação, dólar, liquidez global, política monetária, geopolítica.</p></div>
+        <div class="pilar"><span class="letra">O</span><h3>On-chain</h3><p>Endereços ativos, MVRV, SOPR, realized cap, fluxos de exchanges.</p></div>
+        <div class="pilar"><span class="letra">O</span><h3>Ordinals / Mineradores</h3><p>Ordinals, hashrate, incentivos dos mineradores, o DeFi do Bitcoin.</p></div>
+        <div class="pilar"><span class="letra">D</span><h3>Derivativos</h3><p>Futuros: funding rate, open interest, opções, liquidações, basis.</p></div>
+        <div class="pilar" style="display:flex;align-items:center;justify-content:center;background:transparent;border-style:dashed">
+          <p style="text-align:center;color:var(--azul);font-size:13.5px;font-weight:600">Os 7 juntos<br>formam o mood</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="metodo">
+    <div class="wrap">
+      <div class="metodo">
+        <div>
+          <span class="eyebrow"><span class="dot"></span> Por que método, não palpite</span>
+          <h2>Onde outros veem um vilão, nós vemos um sistema.</h2>
+          <p>A maioria explica a queda do Bitcoin por uma causa só — um nome, uma promessa quebrada,
+            um boato. O preço quase nunca se move assim: é a soma de forças em pilares diferentes,
+            às vezes puxando na mesma direção, às vezes em conflito.</p>
+          <p>O BITMOOD lê os 7 pilares juntos e entrega cenários com condição — nunca previsão seca,
+            nunca promessa de retorno.</p>
+        </div>
+        <ul>
+          <li><span class="checkmark">✔</span> <span><b>Confiança primeiro</b> — nunca sacrificada por alcance ou clickbait.</span></li>
+          <li><span class="checkmark">✔</span> <span><b>Fonte sempre citada</b> — todo dado no vídeo aparece com origem na descrição.</span></li>
+          <li><span class="checkmark">✔</span> <span><b>Probabilidade, não certeza</b> — cenários condicionais, nunca "vai explodir".</span></li>
+          <li><span class="checkmark">✔</span> <span><b>Educacional</b> — nunca recomendação individual de investimento.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="produtos">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow"><span class="dot"></span> O ecossistema</span>
+        <h2>Onde encontrar o BITMOOD</h2>
+      </div>
+      <div class="produtos">
+        <div class="produto">
+          <span class="tag">Canal</span>
+          <h3>YouTube</h3>
+          <p>Análise de notícias de economia e política, no Brasil e no mundo, lidas pelos 7 pilares — sempre que algo move o preço do Bitcoin.</p>
+        </div>
+        <div class="produto">
+          <span class="tag">Curso</span>
+          <h3>SP10K</h3>
+          <p>Seus Primeiros 10 mil reais em Bitcoin. Diagnóstico financeiro, objetivos de longo prazo, sair das dívidas e começar com método.</p>
+        </div>
+        <div class="produto">
+          <span class="tag">3x por semana</span>
+          <h3>Newsletter</h3>
+          <p>O resumo do que moveu cada pilar, direto na caixa de entrada — sem enrolação, com a fonte de cada dado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="newsletter">
+    <div class="wrap">
+      <div class="newsletter">
+        <span class="eyebrow"><span class="dot"></span> Fique por dentro</span>
+        <h2>Receba a leitura dos 7 pilares 3x por semana</h2>
+        <p style="color:var(--neutro);max-width:480px;margin:0 auto">Sem spam, sem promessa de lambo. Só o que moveu o preço e por quê.</p>
+        <form class="signup" onsubmit="return false">
+          <input type="email" placeholder="seu@email.com" required>
+          <button class="btn" type="submit">Quero assinar</button>
+        </form>
+        <p class="fine">Em breve — a lista abre junto com o lançamento do canal.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <div class="foot-brand">
+        <svg viewBox="165 350 690 305" role="img" aria-label="BITMOOD">
+          <path d="M185 436 L281 420 L392 419 L581 474 L418 532 Z" fill="#5B95CE"/>
+          <path d="M186 446 L250 551 L405 617 L344 532 Z" fill="#A8C4DC"/>
+          <path d="M414 588 L568 595 L729 519 L764 450 L709 462 L655 487 Z" fill="#5B95CE"/>
+          <path d="M632 371 L721 409 L706 461 L651 423 Z" fill="#A8C4DC"/>
+          <path d="M736 408 L835 370 L807 423 L714 461 Z" fill="#EAF1F7"/>
+        </svg>
+        BITMOOD © 2026
+      </div>
+      <div class="social">
+        <a href="https://youtube.com/@bitmood" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://instagram.com/bitmood" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://tiktok.com/@bitmood" target="_blank" rel="noopener">TikTok</a>
+      </div>
+    </div>
+    <p class="disclaimer">Conteúdo educacional. O BITMOOD não oferece recomendação individual de
+      investimento — as análises apresentam cenários e probabilidades, nunca certezas ou promessas
+      de retorno. Bitcoin é um ativo de alto risco; invista apenas o que você pode perder.</p>
+  </div>
+</footer>
+
+</body>
+</html>
