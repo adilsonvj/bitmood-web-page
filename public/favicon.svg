@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="165 350 690 305" role="img" aria-label="BitMood geometric whale logo">
+  <defs>
+    <linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8fc7ec"/>
+      <stop offset="0.45" stop-color="#5f9fcb"/>
+      <stop offset="1" stop-color="#193f70"/>
+    </linearGradient>
+    <linearGradient id="gTopDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2c6399"/>
+      <stop offset="1" stop-color="#0d2d55"/>
+    </linearGradient>
+    <linearGradient id="gSilver" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e7f4ff"/>
+      <stop offset="0.48" stop-color="#9cb3ca"/>
+      <stop offset="1" stop-color="#40546d"/>
+    </linearGradient>
+    <linearGradient id="gBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2d6aa0"/>
+      <stop offset="0.42" stop-color="#174a7e"/>
+      <stop offset="1" stop-color="#08274b"/>
+    </linearGradient>
+    <linearGradient id="gBodyDeep" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#174c7f"/>
+      <stop offset="1" stop-color="#061e3c"/>
+    </linearGradient>
+    <linearGradient id="gTailLeft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b6dcf3"/>
+      <stop offset="0.55" stop-color="#4b84ae"/>
+      <stop offset="1" stop-color="#0f3764"/>
+    </linearGradient>
+    <linearGradient id="gTailRight" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef7ff"/>
+      <stop offset="0.52" stop-color="#a6bfd4"/>
+      <stop offset="1" stop-color="#345a79"/>
+    </linearGradient>
+  </defs>
+
+  <!-- upper body -->
+  <path d="M185 436 L281 420 L392 419 L581 474 L418 532 Z" fill="url(#gTop)" stroke="#7bb4dc" stroke-width="0.7"/>
+  <path d="M185 436 L281 420 L418 532 Z" fill="url(#gTopDark)" stroke="#2b6c9e" stroke-width="0.55"/>
+  <path d="M281 420 L392 419 L581 474 L418 518 Z" fill="url(#gTop)" opacity="0.72"/>
+
+  <!-- left cheek / lower head -->
+  <path d="M186 446 L250 551 L405 617 L344 532 Z" fill="url(#gSilver)" stroke="#8299b1" stroke-width="0.65"/>
+  <path d="M186 446 L344 532 L314 572 L250 551 Z" fill="#65798f" opacity="0.72"/>
+  <path d="M250 551 L314 572 L405 617 L344 532 Z" fill="#263e59" opacity="0.74"/>
+
+  <!-- silver sweep / belly highlight -->
+  <path d="M364 530 L397 581 L668 457 L418 548 Z" fill="url(#gSilver)" stroke="#d9ebf8" stroke-width="0.65"/>
+  <path d="M397 581 L414 588 L668 457 L418 548 Z" fill="#3b5269" opacity="0.25"/>
+
+  <!-- main lower body -->
+  <path d="M414 588 L568 595 L729 519 L764 450 L709 462 L655 487 Z" fill="url(#gBody)" stroke="#164f84" stroke-width="0.7"/>
+  <path d="M483 565 L568 595 L729 519 L764 450 L655 487 Z" fill="url(#gBodyDeep)" opacity="0.73"/>
+
+  <!-- lower fin -->
+  <path d="M414 588 L463 625 L546 636 L485 574 Z" fill="url(#gSilver)" stroke="#6e89a4" stroke-width="0.65"/>
+  <path d="M463 625 L546 636 L485 574 Z" fill="#173653" opacity="0.46"/>
+
+  <!-- tail stalk -->
+  <path d="M706 462 L762 452 L729 519 L687 535 Z" fill="url(#gBodyDeep)" stroke="#1b4f7a" stroke-width="0.6"/>
+
+  <!-- tail flukes -->
+  <path d="M632 371 L721 409 L706 461 L651 423 Z" fill="url(#gTailLeft)" stroke="#7fc0ea" stroke-width="0.7"/>
+  <path d="M736 408 L835 370 L807 423 L714 461 Z" fill="url(#gTailRight)" stroke="#bcd3e6" stroke-width="0.7"/>
+  <path d="M706 461 L714 461 L721 409 Z" fill="#082b51" opacity="0.68"/>
+
+  <!-- subtle edge accents -->
+  <path d="M185 436 L418 532 L581 474" fill="none" stroke="#b9def3" stroke-opacity="0.55" stroke-width="0.8"/>
+  <path d="M364 530 L397 581 L668 457" fill="none" stroke="#f0f7fc" stroke-opacity="0.55" stroke-width="0.8"/>
+</svg>
