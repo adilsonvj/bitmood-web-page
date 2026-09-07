@@ -59,38 +59,53 @@ export function buildSculptures(count=207) {
     macro.push(...ring(0,y,0,r,26,.125,"xz"));
   }
 
-  // O1: three block frames joined in a continuous path.
+  // O1: filled faceted cube surfaces, tilted so front, top and side stay visible.
   const onchain=[];
-  const blocks=[[-2.3,-.84,.5],[0,.16,0],[2.3,1.06,-.5]];
-  for(const [cx,cy,cz] of blocks){
-    for(const dz of [-.63,.63])onchain.push(...frame(cx,cy,cz+dz,1.38,1.38,5,.17));
-    for(const x of [-.69,.69])for(const y of [-.69,.69])onchain.push(...line([cx+x,cy+y,cz-.63],[cx+x,cy+y,cz+.63],4,.16));
+  const blocks=[[-2.45,-.68,.65],[0,.1,0],[2.45,.88,-.65]];
+  function cube(center,edge,resolution,size,part="body",angles=[0,0,0]){
+    const points=[];
+    const rotate=(p)=>{
+      let [x,y,z]=p;const [rx,ry,rz]=angles;
+      [y,z]=[y*Math.cos(rx)-z*Math.sin(rx),y*Math.sin(rx)+z*Math.cos(rx)];
+      [x,z]=[x*Math.cos(ry)+z*Math.sin(ry),-x*Math.sin(ry)+z*Math.cos(ry)];
+      [x,y]=[x*Math.cos(rz)-y*Math.sin(rz),x*Math.sin(rz)+y*Math.cos(rz)];
+      return [x+center[0],y+center[1],z+center[2]];
+    };
+    // A closed voxel shell has real front, side, top, and rear surfaces.
+    for(let u=0;u<resolution;u++)for(let v=0;v<resolution;v++)for(let w=0;w<resolution;w++){
+      if(![u,v,w].some(n=>n===0||n===resolution-1))continue;
+      const local=[u,v,w].map(n=>(n-(resolution-1)/2)*edge/resolution);
+      points.push({...point(...rotate(local),size,part),r:angles});
+    }
+    return points;
   }
+  for(const center of blocks)onchain.push(...cube(center,1.65,5,.26,"block",[.22,-.38,.05]));
   for(let i=0;i<2;i++){
     const a=blocks[i],b=blocks[i+1];
-    onchain.push(...line([a[0]+.75,a[1],a[2]],[b[0]-.75,b[1],b[2]],15,.10));
+    for(const z of [-.11,.11])onchain.push(...line([a[0]+.83,a[1],a[2]+z],[b[0]-.83,b[1],b[2]+z],8,.11,"link"));
   }
 
-  // O2: a processor, contacts and an inscribed central die.
-  const ordinals=[...frame(0,0,0,3.2,3.2,11,.24),...frame(0,0,.27,2.27,2.27,8,.17)];
-  for(let i=0;i<6;i++){
-    const c=-1.23+i*.492;
-    ordinals.push(...line([c,-1.68,-.06],[c,-2.32,-.06],4,.115),...line([c,1.68,-.06],[c,2.32,-.06],4,.115),...line([-1.68,c,-.06],[-2.32,c,-.06],4,.115),...line([1.68,c,-.06],[2.32,c,-.06],4,.115));
+  // O2: a long handle, central collar and curved, tapered mining pick.
+  const ordinals=[];
+  for(const z of [-.16,.16])for(const x of [-.14,.14])ordinals.push(...line([x,-2.7,z],[x,1.46,z],23,.19,"handle"));
+  for(let i=0;i<42;i++){
+    const x=-2.55+i/41*5.1,y=1.75-.17*x*x;
+    const thickness=.10+.25*Math.pow(1-Math.abs(x)/2.55,.6);
+    for(const side of [-1,1])for(const z of [-.18,.18])ordinals.push(point(x,y+side*thickness*.4,z,thickness,"pick"));
   }
-  const glyph=["11101","10001","10111","10001","11101"];
-  for(let y=0;y<5;y++)for(let x=0;x<5;x++)if(glyph[y][x]==="1")ordinals.push(point((x-2)*.3,(2-y)*.3,.52,.16));
-  ordinals.push(...line([-.7,-.9,.43],[.7,-.9,.43],7,.11),...line([-.7,.9,.43],[.7,.9,.43],7,.11));
+  ordinals.push(...ring(0,1.37,0,.37,16,.16,"xz"));
+  for(const p of ordinals){const [x,y,z]=p.p,a=-.22;p.p=[x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a),z];}
 
-  // D: an actual lever and triangular fulcrum, with unequal arms/weights.
+  // D: the small weight has the long arm; its lower end raises the heavy block.
   const derivatives=[];
   for(const z of [-.43,.43]){
-    derivatives.push(...line([-1,-1.95,z],[0,.16,z],12,.22),...line([0,.16,z],[1,-1.95,z],12,.22),...line([-1,-1.95,z],[1,-1.95,z],11,.22));
+    derivatives.push(...line([.18,-1.95,z],[1,.16,z],12,.22),...line([1,.16,z],[1.82,-1.95,z],12,.22),...line([.18,-1.95,z],[1.82,-1.95,z],11,.22));
   }
-  for(const z of [-.3,.3])derivatives.push(...line([-3.0,.36,z],[3.0,.36,z],26,.19,"lever"));
-  for(const [cx,width,h] of [[-2.1,1.1,.78],[1.6,1.32,1.34]]){
-    for(const z of [-.4,.4]){
-      const f=frame(cx,.57+h/2,z,width,h,9,.23).map(p=>({...p,part:"lever"}));derivatives.push(...f);
-    }
+  for(const z of [-.3,.3])derivatives.push(...line([-3.4,.36,z],[2.6,.36,z],27,.19,"lever"));
+  derivatives.push(...cube([-2.83,.88,0],.85,4,.16,"weight"),...cube([1.97,1.17,0],1.4,4,.28,"weight"));
+  for(const p of derivatives)if(p.part==="lever"||p.part==="weight"){
+    const x=p.p[0]-1,y=p.p[1]-.30,a=.19;
+    p.p[0]=1+x*Math.cos(a)-y*Math.sin(a);p.p[1]=.30+x*Math.sin(a)+y*Math.cos(a);p.r=[0,0,a];
   }
 
   // Channels: an extruded play symbol with a loose orbit of connections.
