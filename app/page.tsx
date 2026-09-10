@@ -65,7 +65,7 @@ export default function Home() {
     const scene=wrapScene(index,chapters.length),id=chapters[scene].id;
     setDialog(null);
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      window.history.replaceState(null,"",`#${id}`);journeyRef.current?.go(index);
+      window.history.replaceState(null,"",`#${id}`);journeyRef.current?.go(index,true);
     }));
   },[]);
   function toggleMotion(){motionRef.current=!motionRef.current;setMotionPaused(!motionRef.current);}
@@ -73,9 +73,9 @@ export default function Home() {
 
   return <div ref={rootRef} className={`bitmood ${ready?"is-ready":"is-loading"} ${graphicsFailed?"graphics-fallback":""} ${motionPaused?"motion-paused":""}`} data-scene={current.id}>
     <a className="skip-link" href="#baleias" onClick={event=>{event.preventDefault();navigate(2);}}>Ir para as perspectivas</a>
-    <p id="navigation-help" className="sr-only">Use as setas do teclado para mudar de cena, Home para o início e End para os canais. O percurso se repete. Tab percorre os controles e o formulário.</p>
+    <p id="navigation-help" className="sr-only">Use as setas para mudar de cena, Home para o início e End para os canais. O percurso se repete. Tab e Shift mais Tab percorrem os controles e o conteúdo. Quando um texto não couber, as setas para cima e para baixo rolam o texto; as setas laterais continuam mudando de cena.</p>
+    <p className="sr-only" aria-live="polite" aria-atomic="true">Seção {active+1} de {chapters.length}: {current.nav}.</p>
     <main ref={trackRef} className="journey" aria-label="O universo BITMOOD" aria-describedby="navigation-help">
-      {chapters.map((chapter,index)=><div key={chapter.id} id={chapter.id} className="scroll-anchor" style={{top:`${(chapters.length+index)*155}svh`}} aria-hidden="true" />)}
       <div className="experience-stage" ref={stageRef}>
         <div ref={worldRef} className="world-canvas" role="img" aria-label={current.sculpture+". Escultura de facetas azuis e prateadas; o conteúdo de cada perspectiva está no texto."} />
         {graphicsFailed&&<img className="fallback-whale" src="/images/whale-hero.webp" alt="" />}
@@ -108,7 +108,7 @@ export default function Home() {
         <div className="scene-copy-zone">
           {chapters.map((chapter,index)=>{
             const Icon=index>=2&&index<=8?verticalIcons[index-2]:null;
-            return <section key={chapter.id} className={`scene-copy ${index===active?"is-active":""} ${index===0?"newsletter-copy":""}`} aria-labelledby={`title-${chapter.id}`} aria-hidden={index!==active} inert={index!==active}>
+            return <section key={chapter.id} className={`scene-copy ${index===active?"is-active":""} ${index===0?"newsletter-copy":""}`} tabIndex={index===active?0:-1} aria-labelledby={`title-${chapter.id}`} aria-hidden={index!==active} inert={index!==active}>
               <p className="scene-eyebrow">{Icon&&<Icon size={17} strokeWidth={1.4}/>}<span>{chapter.eyebrow}</span></p>
               {index===0?<h1 tabIndex={-1} id={`title-${chapter.id}`}>{chapter.title[0]}<br/>{chapter.title[1]}</h1>:<h2 tabIndex={-1} id={`title-${chapter.id}`}>{chapter.title[0]}<br/>{chapter.title[1]}</h2>}
               <p className="scene-description">{chapter.description}</p>
@@ -122,12 +122,13 @@ export default function Home() {
 
         <div className="sculpture-caption" aria-hidden="true"><i/><span>{current.sculpture}</span></div>
         <footer className="scene-footer">
-          <button className="scroll-prompt" onClick={()=>navigate(active===lastChapter?0:active+1)}>{active===lastChapter?<><span>Continuar o mergulho</span><ArrowUpRight size={16}/></>:<><ArrowDown size={16}/><span>Role para explorar</span></>}</button>
+          <button className="scroll-prompt" onClick={()=>navigate(active===lastChapter?0:active+1)}>{active===lastChapter?<><span>Voltar ao início</span><ArrowUpRight size={16}/></>:<><ArrowDown size={16}/><span>Role para explorar</span></>}</button>
           <span className="footer-signature">BITCOIN INTELLIGENCE</span>
-          <div className="chapter-controls"><button className="icon-control" aria-label="Capítulo anterior" onClick={()=>navigate(active-1)}><ChevronLeft size={19}/></button><span aria-live="polite" aria-atomic="true"><span className="sr-only">Capítulo </span>{String(active+1).padStart(2,"0")}<span className="chapter-total"> / {chapters.length}</span></span><button className="icon-control" aria-label="Próximo capítulo" onClick={()=>navigate(active+1)}><ChevronRight size={19}/></button></div>
+          <div className="chapter-controls"><button className="icon-control" aria-label="Capítulo anterior" onClick={()=>navigate(active-1)}><ChevronLeft size={19}/></button><span><span className="sr-only">Capítulo </span>{String(active+1).padStart(2,"0")}<span className="chapter-total"> / {chapters.length}</span></span><button className="icon-control" aria-label="Próximo capítulo" onClick={()=>navigate(active+1)}><ChevronRight size={19}/></button></div>
         </footer>
         <div className="journey-line" aria-hidden="true"><i/></div>
       </div>
+      {[0,1,2].flatMap(cycle=>chapters.map((chapter,index)=><div key={`${cycle}-${chapter.id}`} id={cycle===1?chapter.id:undefined} data-snap-index={cycle*chapters.length+index} className="scroll-anchor" aria-hidden="true" />))}
     </main>
 
     <Dialog open={dialog!==null} onOpenChange={open=>{if(!open)setDialog(null);}}><DialogContent className={`bitmood-dialog ${dialog==="menu"?"navigation-dialog":""}`} showCloseButton={false}>
