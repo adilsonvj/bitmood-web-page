@@ -153,12 +153,9 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
 @media(max-width:899px) { .newsletter-copy h1 { font-size: 34px; }.newsletter-copy .scene-description { font-size: 16px; }.newsletter-copy .newsletter-form { margin-top: 12px; }.newsletter-copy .form-status:empty { min-height: 0; margin-top: 0; }.newsletter-copy .privacy-link { margin-top: 6px; } }
 @media(max-width:899px) and (max-height:740px) { .newsletter-copy { bottom: 109px; }.newsletter-copy h1 { font-size: 30px; }.newsletter-copy .scene-eyebrow { margin-bottom: 8px; }.newsletter-copy .scene-description { line-height: 1.45; }.newsletter-copy .form-consent { margin-top: 8px; }.newsletter-copy .newsletter-form>label { margin-bottom: 5px; } }
 
-/* Reading stays independent of the fixed stage, including at browser zoom. */
-.bitmood {
-  --reading-surface: #071B2EF5;
-  --copy-top: 112px;
-  --copy-bottom: clamp(110px,14svh,170px);
-}
+/* The text can scroll independently at enlarged browser zoom, while the stage
+   remains visually open: the sculptures must never be covered by opaque panels. */
+.bitmood { --copy-top: 112px; --copy-bottom: clamp(110px,14svh,170px); }
 .scene-copy,.scene-copy.is-active,.newsletter-copy {
   bottom: var(--copy-bottom);
   max-height: calc(100svh - var(--copy-top) - var(--copy-bottom));
@@ -170,8 +167,6 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
   scrollbar-width: thin;
   scrollbar-color: var(--silver) var(--background);
   overflow-wrap: anywhere;
-  background: var(--reading-surface);
-  box-shadow: 0 0 26px 12px var(--reading-surface);
 }
 .scene-copy:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .scene-copy h1:focus-visible,.scene-copy h2:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
@@ -179,11 +174,6 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
 .scene-copy .scene-description { font-size: 1rem; }
 .scene-signals,.footer-signature,.side-caption,.bitmood[data-scene=inicio] .side-caption { opacity: 1; }
 .sculpture-caption { opacity: var(--copy-opacity); }
-.scene-header { background: linear-gradient(var(--reading-surface) 75%,transparent); }
-.scene-footer,.vertical-rail,.side-caption,.sculpture-caption,.world-loading {
-  background: var(--reading-surface);
-  box-shadow: 0 0 16px 6px var(--reading-surface);
-}
 .email-row { background: #103058; border-color: var(--muted-foreground); }
 .email-input::placeholder { color: var(--silver); opacity: 1; }
 .scene-eyebrow { flex-wrap: wrap; }
