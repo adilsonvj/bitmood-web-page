@@ -18,14 +18,17 @@ const ratio = (a,b) => {
   return (values[0]+.05)/(values[1]+.05);
 };
 
-test('reading colors retain at least 4.5:1 even with a white 3D facet behind the reading surface', () => {
-  const surface = token('reading-surface');
-  const alpha = parseInt(surface.slice(7,9),16)/255;
-  const background = rgb(surface).map(channel => channel*alpha+255*(1-alpha));
+test('scene overlays do not restore opaque reading panels over sculptures', () => {
+  assert.ok(!css.includes('--reading-surface'), 'Opaque reading surfaces must not return');
+});
+
+// This checks palette contrast only, not contrast over every animated 3D facet.
+test('reading colors meet 4.5:1 against the base ocean background', () => {
+  const background = rgb(token('background'));
   for (const name of ['foreground','muted-foreground','silver','primary']) {
     const actual = ratio(rgb(token(name)),background);
     assert.ok(actual >= 4.5, `${name}: ${actual.toFixed(2)}:1`);
-    console.log(`Reading ${name}: ${actual.toFixed(2)}:1 (brightest backdrop)`);
+    console.log(`Reading ${name}: ${actual.toFixed(2)}:1 (base background)`);
   }
 });
 
