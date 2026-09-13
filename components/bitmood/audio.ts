@@ -35,12 +35,11 @@ function makeEngine(): Engine {
 export function useOceanSound() {
   const [enabled, setEnabled] = useState(true), [available, setAvailable] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const engine = useRef<Engine | null>(null), enabledRef = useRef(true), unlocking = useRef(false), alive = useRef(true);
+  const engine = useRef<Engine | null>(null), enabledRef = useRef(true), alive = useRef(true);
   const lastCue = useRef(-10), lastWhale = useRef(-10);
 
   const unlock = useCallback(async () => {
-    if (!enabledRef.current || unlocking.current || !alive.current) return;
-    unlocking.current = true;
+    if (!enabledRef.current || !alive.current || document.hidden) return;
     try {
       const audio = engine.current || (engine.current = makeEngine());
       audio.context.onstatechange = () => {
@@ -48,14 +47,16 @@ export function useOceanSound() {
           setPlaying(enabledRef.current && !document.hidden && audio.context.state === "running");
         }
       };
-      if (audio.context.state === "suspended") await audio.context.resume();
-      if (!alive.current || !enabledRef.current || audio.context.state !== "running") return;
+      // Safari may report "interrupted", not just "suspended". A fresh gesture
+      // must also be able to retry even if an earlier resume promise is pending.
+      if (audio.context.state !== "running") await audio.context.resume();
+      if (!alive.current || engine.current !== audio || !enabledRef.current || document.hidden || audio.context.state !== "running") return;
       audio.master.gain.cancelScheduledValues(audio.context.currentTime);
       audio.master.gain.setTargetAtTime(.6, audio.context.currentTime, .65);
       setPlaying(true);
     } catch {
       // A blocked autoplay attempt can be retried by the next real gesture.
-    } finally { unlocking.current = false; }
+    }
   }, []);
 
   const toggle = useCallback(() => {
@@ -122,7 +123,7 @@ export function useOceanSound() {
     }
     function visibility() {
       const audio = engine.current; if (!audio) return;
-      if (document.hidden) { setPlaying(false); void audio.context.suspend(); } else if (enabledRef.current) void unlock();
+      if (document.hidden) { setPlaying(false); void audio.context.suspend().catch(() => {}); } else if (enabledRef.current) void unlock();
     }
     window.addEventListener("pointerdown", gesture, { passive: true }); window.addEventListener("touchend", gesture, { passive: true }); window.addEventListener("keydown", gesture);
     document.addEventListener("visibilitychange", visibility);

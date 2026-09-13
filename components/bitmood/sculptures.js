@@ -74,23 +74,18 @@ export function buildSculptures(count=207) {
     macro.push(...ring(0,y,0,r,26,.125,"xz"));
   }
 
-  // O1: eccentric growth, lumpy bark and branching radial cracks of unequal depth.
+  // O1: original growth rings, restored after visual review.
   const onchain=[];
-  const radii=[.27,.67,1.10,1.63,2.24],totalRadius=radii.reduce((sum,r)=>sum+r,0);
+  const radii=[.38,.83,1.30,1.80,2.34],totalRadius=radii.reduce((sum,r)=>sum+r,0);
   for(let layer=0;layer<radii.length;layer++){
     const radius=radii[layer];
     const amount=layer===radii.length-1?count-onchain.length:Math.round(count*radius/totalRadius);
-    const candidates=[];
-    for(let i=0;i<amount*8;i++){
-      const angle=i/(amount*8)*Math.PI*2;
-      const cracks=[[.65+.10*Math.sin(layer*1.8),1,.055+.016*layer],[2.85-.12*layer,3,.08],[4.8+.09*Math.sin(layer*2),2,.06+.012*layer]];
-      if(cracks.some(([a,first,width])=>layer>=first&&Math.abs(Math.atan2(Math.sin(angle-a),Math.cos(angle-a)))<width))continue;
-      const grain=1+.13*Math.sin(2*angle+.4)+.085*Math.cos(3*angle-.7)+.042*Math.sin(7*angle+layer*.35)+(layer===4?.035: .018)*Math.cos(17*angle+layer);
+    for(let i=0;i<amount;i++){
+      const angle=.30+.11+ i/Math.max(1,amount-1)*(Math.PI*2-.22);
+      const grain=1+.045*Math.sin(3*angle+.4)+.025*Math.cos(7*angle)+.012*Math.sin(11*angle+layer*.6);
       const r=radius*grain;
-      const size=layer===4?.27+.055*Math.sin(angle*13):.13+.025*layer+.018*Math.cos(angle*9);
-      candidates.push(point(r*Math.cos(angle)+.28*(1-layer/4),r*Math.sin(angle)*.89-.16*(1-layer/4),.14*Math.sin(3*angle+layer*.4),size,`growth-ring-${layer}`));
+      onchain.push(point(r*Math.cos(angle)+.065*Math.sin(layer),r*Math.sin(angle)*.94,.10*Math.sin(2*angle+layer*.5),layer===4?.22:.17,`growth-ring-${layer}`));
     }
-    onchain.push(...fit(candidates,amount));
   }
 
   // O2 reuses the closed, tilted cubes; recessed face cells form three carved glyphs.

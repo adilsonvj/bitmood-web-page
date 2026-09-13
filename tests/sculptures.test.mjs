@@ -49,11 +49,7 @@ test('new metaphors retain spiral volume, five rings and inscriptions on all thr
   assert.equal(shapes[5].filter(p=>p.part==='pick'||p.part==='handle').length,0);
 });
 
-test('tree bark has pronounced irregularity and three separate radial cracks', () => {
-  const bark=buildSculptures(300)[4].filter(p=>p.part==='growth-ring-4');
-  const radii=bark.map(p=>Math.hypot(p.p[0],p.p[1]/.89));
-  assert.ok(Math.max(...radii)-Math.min(...radii)>.65);
-  const angles=bark.map(p=>(Math.atan2(p.p[1]/.89,p.p[0])+2*Math.PI)%(2*Math.PI)).sort((a,b)=>a-b);
-  const gaps=angles.map((a,i)=>(angles[(i+1)%angles.length]-a+2*Math.PI)%(2*Math.PI));
-  assert.equal(gaps.filter(gap=>gap>.15).length,3);
+test('tree rings match the original version selected by the owner (6a19732)', () => {
+  assert.equal(createHash('sha256').update(JSON.stringify(buildSculptures(300)[4])).digest('hex'),
+    'be786ee8522fe76131dbbf36895ef28c3ceb3c84775b43d7eb55c959701231ef');
 });

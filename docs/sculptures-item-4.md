@@ -2,8 +2,8 @@
 
 - T: oito arcos contínuos nos quadrados de lados 1, 1, 2, 3, 5, 8, 13 e 21.
   Uma malha discreta de 32 segmentos (64 vértices) explicita a construção de Fibonacci.
-- O¹: cinco anéis excêntricos, casca rugosa e três rachaduras de profundidades
-  diferentes, com bordas desencontradas e circunferências assimétricas.
+- O¹: restaurado o desenho original de cinco anéis, com irregularidade discreta
+  e uma fissura radial, conforme preferência posterior do proprietário.
 - O²: três cubos conectados, reaproveitando a construção anterior de On-Chain.
   Células rebaixadas nas faces produzem inscrições geométricas abstratas.
 
@@ -30,3 +30,9 @@ menos regulares. A revisão acima foi inspecionada em 1280 × 800 e 320 × 740.
 TypeScript, lint, build e 26 testes passaram; depois do build, apenas o valor
 de enquadramento vertical da espiral no mobile foi ajustado e conferido no preview.
 As métricas de tamanho acima referem-se à primeira versão, antes desta revisão.
+
+## Escolha final dos anéis
+
+Após comparar as versões, o proprietário preferiu os anéis de `6a19732`.
+Somente essa geometria foi restaurada e protegida por teste de hash.
+O Fibonacci revisado, sua estrutura de quadrados e os cubos inscritos permanecem.

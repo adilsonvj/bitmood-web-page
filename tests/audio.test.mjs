@@ -9,7 +9,7 @@ const source = ts.transpileModule(readFileSync(new URL('../components/bitmood/au
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
-function harness({ preference, blocked = false, supported = true } = {}) {
+function harness({ preference, blocked = false, supported = true, pending = false } = {}) {
   const slots = [], effects = [], contexts = [], storage = new Map();
   if (preference) storage.set('bitmood-sound', preference);
   let cursor = 0;
@@ -33,16 +33,20 @@ function harness({ preference, blocked = false, supported = true } = {}) {
   });
   class AudioContext {
     state = 'suspended'; currentTime = 0; sampleRate = 10; destination = {};
+    resumeCalls = 0; pendingResumes = [];
     constructor() { contexts.push(this); }
     createGain = node; createDynamicsCompressor = node; createOscillator = node;
     createBufferSource = node; createBiquadFilter = node;
     createBuffer() { return { getChannelData: () => new Float32Array(80) }; }
     async resume() {
+      this.resumeCalls++;
       if (blocked) throw new Error('Autoplay blocked');
+      if (pending) await new Promise(resolve => this.pendingResumes.push(resolve));
+      if (this.state === 'closed') return;
       this.state = 'running'; this.onstatechange?.();
     }
     async suspend() { this.state = 'suspended'; this.onstatechange?.(); }
-    async close() { this.state = 'closed'; this.onstatechange?.(); }
+    async close() { this.state = 'closed'; this.onstatechange?.(); this.pendingResumes.forEach(resolve=>resolve()); }
   }
   const window = new EventTarget(), document = new EventTarget(), exports = {};
   document.hidden = false;
@@ -54,7 +58,7 @@ function harness({ preference, blocked = false, supported = true } = {}) {
   });
   const render = () => { cursor = 0; return exports.useOceanSound(); };
   render(); const cleanup = effects[0]();
-  return { render, cleanup, contexts, storage, document, unblock: () => { blocked = false; } };
+  return { render, cleanup, contexts, storage, document, unblock: () => { blocked = false; pending = false; } };
 }
 const flush = async () => { await Promise.resolve(); await Promise.resolve(); };
 
@@ -110,4 +114,32 @@ test('unsupported audio stays unavailable and inactive', async () => {
     await flush(); assert.equal(h.render().available, false);
     assert.equal(h.render().playing, false);
   } finally { h.cleanup(); }
+});
+
+test('Safari interrupted audio resumes on explicit activation and on returning to the page', async () => {
+  const h = harness();
+  try {
+    await flush(); h.render().toggle(); await flush();
+    const audio=h.contexts[0];
+    audio.state='interrupted'; audio.onstatechange();
+    assert.equal(h.render().playing,false);
+    h.render().toggle(); await flush();
+    assert.equal(audio.resumeCalls,2);
+    assert.equal(h.render().playing,true);
+    audio.state='interrupted'; audio.onstatechange();
+    h.document.dispatchEvent(new Event('visibilitychange')); await flush();
+    assert.equal(audio.resumeCalls,3);
+    assert.equal(h.render().playing,true);
+  } finally { h.cleanup(); }
+});
+
+test('a pending resume does not prevent a fresh activation gesture from retrying', async () => {
+  const h=harness({pending:true});
+  try {
+    await flush(); h.render().toggle(); await flush();
+    assert.equal(h.render().playing,false);
+    h.unblock(); h.render().toggle(); await flush();
+    assert.equal(h.contexts[0].resumeCalls,2);
+    assert.equal(h.render().playing,true);
+  } finally { h.cleanup(); await flush(); }
 });
