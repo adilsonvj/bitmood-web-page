@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { buildSculptures } from '../components/bitmood/sculptures.js';
+import { buildSculptures, fibonacciGuidePoints } from '../components/bitmood/sculptures.js';
 
 test('sculptures reuse a fixed fragment budget with finite bounded targets', () => {
   for (const count of [207,300]) {
@@ -37,6 +37,7 @@ test('unrelated sculptures retain their approved geometry', () => {
 test('new metaphors retain spiral volume, five rings and inscriptions on all three blocks', () => {
   const shapes=buildSculptures(300);
   assert.ok(shapes[2].every(p=>p.part==='spiral'));
+  assert.equal(fibonacciGuidePoints().length,64);
   assert.ok(Math.max(...shapes[2].map(p=>p.p[2]))-Math.min(...shapes[2].map(p=>p.p[2]))>.3);
   assert.equal(new Set(shapes[4].map(p=>p.part)).size,5);
   const inscriptions=shapes[5].filter(p=>p.part==='inscription');
@@ -46,4 +47,13 @@ test('new metaphors retain spiral volume, five rings and inscriptions on all thr
   }
   assert.equal(shapes[5].filter(p=>p.part==='link').length,6);
   assert.equal(shapes[5].filter(p=>p.part==='pick'||p.part==='handle').length,0);
+});
+
+test('tree bark has pronounced irregularity and three separate radial cracks', () => {
+  const bark=buildSculptures(300)[4].filter(p=>p.part==='growth-ring-4');
+  const radii=bark.map(p=>Math.hypot(p.p[0],p.p[1]/.89));
+  assert.ok(Math.max(...radii)-Math.min(...radii)>.65);
+  const angles=bark.map(p=>(Math.atan2(p.p[1]/.89,p.p[0])+2*Math.PI)%(2*Math.PI)).sort((a,b)=>a-b);
+  const gaps=angles.map((a,i)=>(angles[(i+1)%angles.length]-a+2*Math.PI)%(2*Math.PI));
+  assert.equal(gaps.filter(gap=>gap>.15).length,3);
 });

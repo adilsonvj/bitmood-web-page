@@ -22,6 +22,15 @@ function fit(points, count) {
   });
 }
 
+const fibonacciTransform=(x,y,z)=>[(x+7)*5.6/34,(y-5.5)*5.6/34,z];
+export function fibonacciGuidePoints() {
+  const squares=[[0,0,1],[1,0,1],[0,1,2],[-3,0,3],[-3,-5,5],[2,-5,8],[-3,3,13],[-24,-5,21]];
+  return squares.flatMap(([x,y,s])=>{
+    const corners=[[x,y],[x+s,y],[x+s,y+s],[x,y+s]];
+    return corners.flatMap((p,i)=>[fibonacciTransform(...p,-.22),fibonacciTransform(...corners[(i+1)%4],-.22)]);
+  });
+}
+
 export function buildSculptures(count=207) {
   // B: a closed vault, recessed door and unmistakable radial locking wheel.
   const vault=[...frame(0,0,-.48,3.9,3.35,13,.25),...frame(0,0,.63,3.9,3.35,13,.25),...frame(0,0,.83,3.1,2.62,10,.21)];
@@ -38,19 +47,20 @@ export function buildSculptures(count=207) {
   for(let y=0;y<6;y++){const w=2.8*(1-y/6),n=Math.max(1,Math.round(w*3));for(let x=0;x<n;x++)institution.push(point(n===1?0:-w+2*w*x/(n-1),1.75+y*.22,0,.31));}
   while(institution.length<count){const j=institution.length;institution.push(point(-2.6+(j%16)*.345,1.55,j%2?.5:-.5,.25));}
 
-  // T: a golden spiral grows by phi each quarter turn, with a faceted tube section.
+  // T: continuous quarter arcs in Fibonacci squares (1,1,2,3,5,8,13,21).
   const technical=[];
-  const growth=Math.log((1+Math.sqrt(5))/2)/(Math.PI/2);
-  for(let i=0;i<count;i++){
-    const t=Math.floor(i/3)/Math.max(1,Math.ceil(count/3)-1),radius=lerp(.14,2.9,t);
-    const angle=Math.log(radius/.14)/growth-.8;
-    const normal=angle-Math.atan(growth),section=(i%3)*Math.PI*2/3+i*.17;
-    const thickness=lerp(.07,.20,t),offset=Math.cos(section)*thickness;
-    technical.push(point(radius*Math.cos(angle)+Math.cos(normal)*offset,radius*Math.sin(angle)+Math.sin(normal)*offset,Math.sin(section)*thickness,lerp(.12,.22,t),"spiral"));
-  }
-  for(const axis of [0,1]){
-    const values=technical.map(p=>p.p[axis]),center=(Math.min(...values)+Math.max(...values))/2;
-    technical.forEach(p=>{p.p[axis]-=center;});
+  const arcs=[[1,1,1,Math.PI],[1,1,1,Math.PI*1.5],[0,1,2,0],[0,0,3,Math.PI/2],[2,0,5,Math.PI],[2,3,8,Math.PI*1.5],[-3,3,13,0],[-3,-5,21,Math.PI/2]];
+  const scale=5.6/34,curveBudget=count;
+  const arcWeights=arcs.map(a=>Math.sqrt(a[2])),weightSum=arcWeights.reduce((a,b)=>a+b,0);
+  for(let arc=0;arc<arcs.length;arc++){
+    const [cx,cy,r,start]=arcs[arc];
+    const amount=arc===arcs.length-1?curveBudget-technical.length:Math.round(curveBudget*arcWeights[arc]/weightSum);
+    for(let i=0;i<amount;i++){
+      const angle=start+(i/Math.max(1,amount-1))*Math.PI/2;
+      const thickness=Math.min(.18,.026+r*.008),phase=i*2.4;
+      const radial=r+Math.cos(phase)*thickness/scale;
+      technical.push(point(...fibonacciTransform(cx+radial*Math.cos(angle),cy+radial*Math.sin(angle),.20+Math.sin(phase)*thickness),Math.min(.22,.06+r*.013),"spiral"));
+    }
   }
 
   // M: meridians and parallels form a globe, with depth from every angle.
@@ -64,18 +74,23 @@ export function buildSculptures(count=207) {
     macro.push(...ring(0,y,0,r,26,.125,"xz"));
   }
 
-  // O1: irregular growth rings, shared grain and a narrow radial fissure.
+  // O1: eccentric growth, lumpy bark and branching radial cracks of unequal depth.
   const onchain=[];
-  const radii=[.38,.83,1.30,1.80,2.34],totalRadius=radii.reduce((sum,r)=>sum+r,0);
+  const radii=[.27,.67,1.10,1.63,2.24],totalRadius=radii.reduce((sum,r)=>sum+r,0);
   for(let layer=0;layer<radii.length;layer++){
     const radius=radii[layer];
     const amount=layer===radii.length-1?count-onchain.length:Math.round(count*radius/totalRadius);
-    for(let i=0;i<amount;i++){
-      const angle=.30+.11+ i/Math.max(1,amount-1)*(Math.PI*2-.22);
-      const grain=1+.045*Math.sin(3*angle+.4)+.025*Math.cos(7*angle)+.012*Math.sin(11*angle+layer*.6);
+    const candidates=[];
+    for(let i=0;i<amount*8;i++){
+      const angle=i/(amount*8)*Math.PI*2;
+      const cracks=[[.65+.10*Math.sin(layer*1.8),1,.055+.016*layer],[2.85-.12*layer,3,.08],[4.8+.09*Math.sin(layer*2),2,.06+.012*layer]];
+      if(cracks.some(([a,first,width])=>layer>=first&&Math.abs(Math.atan2(Math.sin(angle-a),Math.cos(angle-a)))<width))continue;
+      const grain=1+.13*Math.sin(2*angle+.4)+.085*Math.cos(3*angle-.7)+.042*Math.sin(7*angle+layer*.35)+(layer===4?.035: .018)*Math.cos(17*angle+layer);
       const r=radius*grain;
-      onchain.push(point(r*Math.cos(angle)+.065*Math.sin(layer),r*Math.sin(angle)*.94,.10*Math.sin(2*angle+layer*.5),layer===4?.22:.17,`growth-ring-${layer}`));
+      const size=layer===4?.27+.055*Math.sin(angle*13):.13+.025*layer+.018*Math.cos(angle*9);
+      candidates.push(point(r*Math.cos(angle)+.28*(1-layer/4),r*Math.sin(angle)*.89-.16*(1-layer/4),.14*Math.sin(3*angle+layer*.4),size,`growth-ring-${layer}`));
     }
+    onchain.push(...fit(candidates,amount));
   }
 
   // O2 reuses the closed, tilted cubes; recessed face cells form three carved glyphs.

@@ -1,13 +1,15 @@
 # Item 4 — novas esculturas
 
-- T: espiral áurea com volume, aproximação contínua da espiral de Fibonacci.
-  O raio cresce pelo fator phi a cada quarto de volta.
-- O¹: cinco anéis de crescimento irregulares, com grão compartilhado e fissura radial.
+- T: oito arcos contínuos nos quadrados de lados 1, 1, 2, 3, 5, 8, 13 e 21.
+  Uma malha discreta de 32 segmentos (64 vértices) explicita a construção de Fibonacci.
+- O¹: cinco anéis excêntricos, casca rugosa e três rachaduras de profundidades
+  diferentes, com bordas desencontradas e circunferências assimétricas.
 - O²: três cubos conectados, reaproveitando a construção anterior de On-Chain.
   Células rebaixadas nas faces produzem inscrições geométricas abstratas.
 
 As três formas usam os mesmos 300 fragmentos da experiência. Não foram adicionados
-assets, texturas, dependências ou meshes. Paleta e materiais originais preservados.
+assets, texturas, dependências ou meshes. A revisão acrescenta apenas um objeto
+LineSegments para os quadrados de Fibonacci. Paleta e materiais originais preservados.
 O enquadramento de O¹/O² foi ajustado para afastar as artes do texto em telas pequenas.
 Os demais alvos geométricos foram comparados por hash com a versão anterior.
 
@@ -20,3 +22,11 @@ Os demais alvos geométricos foram comparados por hash com a versão anterior.
 - Chunk de produção `world`: 504937 bytes (sem compressão). O aviso de chunk acima
   de 500 KB permanece; não é uma medição de performance no aparelho.
 - Falta aprovação visual do proprietário e teste em Android físico.
+
+## Revisão após feedback
+
+O proprietário aprovou a base, mas pediu uma espiral mais reconhecível e anéis
+menos regulares. A revisão acima foi inspecionada em 1280 × 800 e 320 × 740.
+TypeScript, lint, build e 26 testes passaram; depois do build, apenas o valor
+de enquadramento vertical da espiral no mobile foi ajustado e conferido no preview.
+As métricas de tamanho acima referem-se à primeira versão, antes desta revisão.

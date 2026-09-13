@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { buildSculptures } from "./sculptures.js";
+import { buildSculptures, fibonacciGuidePoints } from "./sculptures.js";
 import { wrapScene } from "../../lib/bitmood/navigation.js";
 
 const smooth = value => { const t = Math.max(0, Math.min(1, value)); return t*t*(3-2*t); };
@@ -24,6 +24,9 @@ export async function createWorld(host, options) {
   renderer.domElement.setAttribute("aria-hidden","true");host.appendChild(renderer.domElement);
   const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x071b2e,.020);
   const camera=new THREE.PerspectiveCamera(33,1,.1,100),world=new THREE.Group();scene.add(world);
+  const fibonacciGuideGeometry=new THREE.BufferGeometry().setFromPoints(fibonacciGuidePoints().map(p=>V(...p)));
+  const fibonacciGuideMaterial=new THREE.LineBasicMaterial({color:0x5b95ce,transparent:true,opacity:0,depthWrite:false});
+  const fibonacciGuides=new THREE.LineSegments(fibonacciGuideGeometry,fibonacciGuideMaterial);world.add(fibonacciGuides);
   const key=new THREE.DirectionalLight(0xd3e5f4,3.2);key.position.set(-5,8,6);scene.add(key);
   const rim=new THREE.DirectionalLight(0x5b95ce,4);rim.position.set(4,3,-5);scene.add(rim);
   const fill=new THREE.DirectionalLight(0xa8c4dc,.65);fill.position.set(-4,-3,5);scene.add(fill);
@@ -105,7 +108,7 @@ export async function createWorld(host, options) {
     {x:0,y:.7,yaw:.12,roll:-.04,scale:1,distance:15,mobileY:2.7,framing:11.0},
     {x:2.25,y:1.05,yaw:-.22,roll:-.015,scale:1.12,distance:15,mobileY:3.55,framing:9.1},
     {x:2.1,y:.85,yaw:.21,roll:0,scale:1,distance:15,mobileY:2.55,framing:7.9},
-    {x:2.0,y:.95,yaw:-.14,roll:.04,scale:1,distance:15,mobileY:2.55,framing:7.9},
+    {x:2.0,y:.95,yaw:-.14,roll:.04,scale:1,distance:15,mobileY:3.55,framing:7.9},
     {x:2.2,y:1.0,yaw:.2,roll:-.17,scale:1.05,distance:15,mobileY:2.55,framing:7.9},
     {x:2.0,y:1.0,yaw:-.24,roll:0,scale:.96,distance:15,mobileY:3.6,framing:8.1},
     {x:2.6,y:1.0,yaw:-.22,roll:.04,scale:.90,distance:15,mobileY:3.6,framing:7.9},
@@ -152,6 +155,7 @@ export async function createWorld(host, options) {
     const current=views[segment],next=views[nextIndex],blend=key=>THREE.MathUtils.lerp(current[key],next[key],mix);
     const weight=chapter=>(segment===chapter?1-mix:0)+(nextIndex===chapter?mix:0);
     const whaleWeight=weight(0),orcaWeight=weight(2),angle=progress/views.length*Math.PI*2;
+    fibonacciGuides.visible=weight(4)>.001;fibonacciGuideMaterial.opacity=weight(4)*.32;
     world.rotation.set(motion?.025*Math.sin(time*.11):0,blend("yaw")+(motion?pointer.x*.10+Math.sin(time*.09)*.027:0),blend("roll"));
     world.position.set(mobile?.02:blend("x"),mobile?blend("mobileY"):blend("y"),0);world.scale.setScalar(blend("scale"));
     const distance=mobile?Math.max(21.8,blend("framing")/(2*Math.tan(THREE.MathUtils.degToRad(16.5))*camera.aspect)):blend("distance");
@@ -216,6 +220,7 @@ export async function createWorld(host, options) {
     window.removeEventListener("pointermove",move);document.removeEventListener("pointerleave",leave);window.removeEventListener("pointerdown",pointerDown);window.removeEventListener("click",click);document.removeEventListener("visibilitychange",visibility);renderer.domElement.removeEventListener("webglcontextlost",contextLost);
     pieces.forEach(p=>p.mesh.geometry.dispose());for(const {material} of materialMap.values())material.dispose();
     lightRigs.forEach(r=>{r.coreMaterial.dispose();r.rayMaterial.dispose();});new Set(eyeRigs.map(r=>r.material)).forEach(m=>m.dispose());
+    fibonacciGuideGeometry.dispose();fibonacciGuideMaterial.dispose();
     eyeGeometry.dispose();rayGeometry.dispose();coreGeometry.dispose();dustGeometry.dispose();dustMaterial.dispose();environment.dispose();renderer.dispose();renderer.domElement.remove();
   }
   options.signal.addEventListener("abort",dispose,{once:true});return {dispose};
