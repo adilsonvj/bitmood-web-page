@@ -217,3 +217,8 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
   .journey-line { bottom: 2px; }
   .bitmood-dialog { max-height: calc(100svh - 12px); }
 }
+
+/* Decorative labels compete with the sculpture and reading area on phones. */
+@media(max-width:767px) {
+  .sculpture-caption,.side-caption { display: none; }
+}
