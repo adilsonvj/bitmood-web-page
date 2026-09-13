@@ -223,3 +223,8 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
 @media(max-width:767px) {
   .sculpture-caption,.side-caption { display: none; }
 }
+
+/* Finish reading long copy without chaining a touch drag into the scene track. */
+@media(pointer:coarse) {
+  .scene-copy { overscroll-behavior-y: contain; }
+}

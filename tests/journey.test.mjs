@@ -113,7 +113,7 @@ test('vertical keys read overflowing text before advancing; lateral keys always 
   } finally {h.close();}
 });
 
-test('native snapping owns gesture settlement and recentering preserves the visible scene', () => {
+test('native snapping owns wheel settlement and recentering preserves the visible scene', () => {
   const h=harness({nativeSnap:true});
   try {
     h.advance(32);
@@ -130,6 +130,94 @@ test('native snapping owns gesture settlement and recentering preserves the visi
     h.controller.go(6);h.advance(1000);assert.equal(h.scenes.at(-1),6);
     assert.equal(h.track.classList.contains('is-repositioning'),false);
   } finally {h.close();}
+});
+
+const finger = (x, y, identifier = 1) => ({ clientX: x, clientY: y, identifier });
+
+test('touch swipes cancel native page panning and change only one scene per gesture', () => {
+  const h = harness({ nativeSnap: true });
+  try {
+    h.advance(32);
+    h.emit('touchstart', { touches: [finger(150, 400)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(150, 396)] }).defaultPrevented, true);
+    assert.equal(h.track.scrollTop, 10 * h.step, 'no native displacement before navigation');
+    h.emit('touchmove', { touches: [finger(150, 340)] }); h.advance(1000);
+    assert.equal(h.scenes.at(-1), 1);
+    h.emit('touchmove', { touches: [finger(150, 100)] }); h.advance(1000);
+    assert.equal(h.scenes.at(-1), 1);
+    h.emit('touchend', { touches: [] });
+    h.emit('touchstart', { touches: [finger(150, 300)] });
+    h.emit('touchmove', { touches: [finger(150, 360)] });
+    h.emit('touchend', { touches: [] }); h.advance(1000);
+    assert.equal(h.scenes.at(-1), 0);
+    assert.equal(h.emit('wheel', { deltaY: 120 }).defaultPrevented, false);
+  } finally { h.close(); }
+});
+
+test('touch keeps long text native for the whole gesture, even on reaching its boundary', () => {
+  const h = harness({ nativeSnap: true });
+  const copy = { scrollTop: 30, scrollHeight: 900, clientHeight: 180,
+    closest: selector => selector === '.scene-copy.is-active' ? copy : null };
+  try {
+    h.emit('touchstart', { target: copy, touches: [finger(100, 400)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 350)] }).defaultPrevented, false);
+    copy.scrollTop = 720;
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 250)] }).defaultPrevented, false);
+    h.emit('touchend', { touches: [] }); h.advance(1000);
+    assert.equal(h.scenes.at(-1), 0);
+    h.emit('touchstart', { target: copy, touches: [finger(100, 400)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 340)] }).defaultPrevented, true);
+    h.emit('touchend', { touches: [] }); h.advance(1000);
+    assert.equal(h.scenes.at(-1), 1);
+  } finally { h.close(); }
+});
+
+test('touch preserves pinch, horizontal gestures, inputs, dialogs and short taps', () => {
+  const h = harness();
+  try {
+    h.emit('touchstart', { touches: [finger(100, 400), finger(200, 400, 2)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 300), finger(200, 500, 2)] }).defaultPrevented, false);
+    h.emit('touchstart', { touches: [finger(100, 400)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(170, 399)] }).defaultPrevented, false);
+    const field = { closest: selector => selector.includes('input') ? field : null };
+    h.emit('touchstart', { target: field, touches: [finger(100, 400)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 300)] }).defaultPrevented, false);
+    h.setBlocked(true);
+    h.emit('touchstart', { touches: [finger(100, 400)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 300)] }).defaultPrevented, false);
+    h.setBlocked(false);
+    h.emit('touchstart', { touches: [finger(100, 400)] });
+    h.emit('touchmove', { touches: [finger(100, 390)] });
+    h.emit('touchcancel', { touches: [] }); h.advance(1000);
+    assert.equal(h.scenes.at(-1), 0);
+  } finally { h.close(); }
+});
+
+test('touch wraps the final scene and respects reduced motion', () => {
+  const h = harness();
+  try {
+    h.setMotion(false); h.controller.go(9); h.advance(32);
+    h.emit('touchstart', { touches: [finger(100, 400)] });
+    h.emit('touchmove', { touches: [finger(100, 300)] });
+    h.emit('touchend', { touches: [] }); h.advance(32);
+    assert.equal(h.scenes.at(-1), 0);
+  } finally { h.close(); }
+});
+
+test('pinch-zoomed pages retain native panning and a second finger cancels swipe ownership', () => {
+  const h = harness();
+  try {
+    h.win.visualViewport = { scale: 2 };
+    h.emit('touchstart', { touches: [finger(100, 400)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 300)] }).defaultPrevented, false);
+    h.win.visualViewport.scale = 1;
+    h.emit('touchstart', { touches: [finger(100, 400)] });
+    h.emit('touchmove', { touches: [finger(100, 395)] });
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 300), finger(200, 400, 2)] }).defaultPrevented, false);
+    assert.equal(h.emit('touchmove', { touches: [finger(100, 250)] }).defaultPrevented, false);
+    h.emit('touchend', { touches: [] }); h.advance(1000);
+    assert.equal(h.scenes.at(-1), 0);
+  } finally { h.close(); }
 });
 
 test('keyboard transitions finish in 500 ms and nested copy scroll does not move the scene', () => {
