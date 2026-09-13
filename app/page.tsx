@@ -88,7 +88,7 @@ export default function Home() {
     <p className="sr-only" aria-live="polite" aria-atomic="true">Seção {active+1} de {chapters.length}: {current.nav}.</p>
     <main ref={trackRef} className="journey" aria-label="O universo BITMOOD" aria-describedby="navigation-help">
       <div className="experience-stage" ref={stageRef}>
-        <div ref={worldRef} className="world-canvas" role="img" aria-label={current.sculpture+". Escultura de facetas azuis e prateadas; o conteúdo de cada perspectiva está no texto."} />
+        <div ref={worldRef} className="world-canvas" aria-hidden="true" />
         {(!ready||graphicsFailed||staticGraphics)&&<img className="fallback-whale" src="/images/whale-hero.webp" alt="" fetchPriority="high" decoding="async" />}
         <div className="atmosphere" aria-hidden="true" />
         <div className="scene-bracket bracket-a" aria-hidden="true" /><div className="scene-bracket bracket-b" aria-hidden="true" />
@@ -105,7 +105,7 @@ export default function Home() {
             <button data-sound-toggle className={`sound-control ${soundPlaying?"is-on":""}`} onClick={toggleSound} aria-pressed={soundPlaying} aria-label={!soundAvailable?"Som indisponível":soundPlaying?"Desativar som ambiente":"Ativar som ambiente"} disabled={!soundAvailable}>
               {soundPlaying?<Volume2 size={16}/>:<VolumeX size={16}/>}<span>{!soundAvailable?"Sem áudio":soundPlaying?"Som on":soundEnabled?"Ativar som":"Som off"}</span><span className="sound-bars" aria-hidden="true"><i/><i/><i/><i/></span>
             </button>
-            <button className="icon-control motion-control" onClick={toggleMotion} aria-label={motionPaused?"Ativar movimento contínuo":"Reduzir os movimentos"} aria-pressed={motionPaused} title={motionPaused?"Ativar movimento":"Reduzir movimentos"}>{motionPaused?<Play size={15}/>:<Pause size={15}/>}</button>
+            <button className="icon-control motion-control" onClick={toggleMotion} aria-label={motionPaused?"Ativar movimento contínuo":"Pausar movimento contínuo"} aria-pressed={motionPaused} title={motionPaused?"Ativar movimento":"Pausar movimento"}>{motionPaused?<Play size={15}/>:<Pause size={15}/>}</button>
             <button className="icon-control menu-control" onClick={()=>setDialog("menu")} aria-label="Abrir navegação"><Menu size={20}/></button>
           </div>
         </header>

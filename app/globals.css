@@ -145,6 +145,7 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
 @media(max-height:520px) { .scene-copy.is-active { max-height: calc(100svh - 180px); overflow-y: auto; padding-right: 12px; }.scene-signals,.sculpture-caption,.side-caption { display: none; }.scene-header { padding-top: 9px; padding-bottom: 9px; }.scene-copy h1,.scene-copy h2 { font-size: 30px; }.scene-copy .scene-description { font-size: 16px; }.vertical-rail { bottom: 60px; }.scene-footer { bottom: 12px; }.journey-line { bottom: 5px; } }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation: none!important; transition: none!important; } html { scroll-behavior: auto; } }
 .motion-paused .sound-bars i { animation: none!important; }
+.motion-paused .world-loading i { animation-play-state: paused; }
 
 /* Keep the opening form readable while the animals occupy the upper/right stage. */
 .scene-copy h1:focus-visible,.scene-copy h2:focus-visible { outline: 1px solid #5B95CE; outline-offset: 8px; }
