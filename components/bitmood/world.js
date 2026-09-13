@@ -107,8 +107,8 @@ export async function createWorld(host, options) {
     {x:2.1,y:.85,yaw:.21,roll:0,scale:1,distance:15,mobileY:2.55,framing:7.9},
     {x:2.0,y:.95,yaw:-.14,roll:.04,scale:1,distance:15,mobileY:2.55,framing:7.9},
     {x:2.2,y:1.0,yaw:.2,roll:-.17,scale:1.05,distance:15,mobileY:2.55,framing:7.9},
-    {x:2.0,y:1.0,yaw:-.24,roll:0,scale:.96,distance:15,mobileY:2.6,framing:8.1},
-    {x:2.1,y:1.0,yaw:-.22,roll:.04,scale:1.04,distance:15,mobileY:2.7,framing:7.9},
+    {x:2.0,y:1.0,yaw:-.24,roll:0,scale:.96,distance:15,mobileY:3.6,framing:8.1},
+    {x:2.6,y:1.0,yaw:-.22,roll:.04,scale:.90,distance:15,mobileY:3.6,framing:7.9},
     {x:2.0,y:1.0,yaw:-.2,roll:-.02,scale:1,distance:15,mobileY:2.55,framing:8.0},
     {x:2.2,y:1.0,yaw:.22,roll:0,scale:1.08,distance:15,mobileY:2.55,framing:7.9},
   ];
@@ -187,7 +187,7 @@ export async function createWorld(host, options) {
       }
       p.mesh.position.copy(workingP);p.mesh.quaternion.copy(workingQ);p.mesh.scale.setScalar(THREE.MathUtils.lerp(from.s,to.s,t));
       p.mesh.morphTargetInfluences[0]=segment===2?1-t:nextIndex===2?t:0;
-      p.mesh.morphTargetInfluences[1]=(['block','weight'].includes(from.part)?1-t:0)+(['block','weight'].includes(to.part)?t:0);
+      p.mesh.morphTargetInfluences[1]=(['block','inscription','weight'].includes(from.part)?1-t:0)+(['block','inscription','weight'].includes(to.part)?t:0);
       if(motion){const small=Math.sin(time*p.rate*.5+p.phase)*.011*(1-p.mesh.morphTargetInfluences[1]*.8);p.mesh.rotateX(small);p.mesh.rotateY(small*.75);}
     }
     for(const rig of lightRigs){

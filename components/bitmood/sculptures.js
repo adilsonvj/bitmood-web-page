@@ -38,15 +38,20 @@ export function buildSculptures(count=207) {
   for(let y=0;y<6;y++){const w=2.8*(1-y/6),n=Math.max(1,Math.round(w*3));for(let x=0;x<n;x++)institution.push(point(n===1?0:-w+2*w*x/(n-1),1.75+y*.22,0,.31));}
   while(institution.length<count){const j=institution.length;institution.push(point(-2.6+(j%16)*.345,1.55,j%2?.5:-.5,.25));}
 
-  // T: five candles, wicks, a moving-average curve and three reference levels.
+  // T: a golden spiral grows by phi each quarter turn, with a faceted tube section.
   const technical=[];
-  const candles=[[-2.3,-.82,.8],[-1.15,-.28,1.25],[0,-.38,.72],[1.15,.4,1.72],[2.3,1.04,1.18]];
-  for(const [x,y,h] of candles){
-    for(const side of [-1,1])technical.push(...line([x+side*.19,y-h/2,.12],[x+side*.19,y+h/2,.12],9,.19));
-    technical.push(...line([x,y-h/2-.52,.12],[x,y-h/2-.12,.12],4,.09),...line([x,y+h/2+.12,.12],[x,y+h/2+.48,.12],4,.09));
+  const growth=Math.log((1+Math.sqrt(5))/2)/(Math.PI/2);
+  for(let i=0;i<count;i++){
+    const t=Math.floor(i/3)/Math.max(1,Math.ceil(count/3)-1),radius=lerp(.14,2.9,t);
+    const angle=Math.log(radius/.14)/growth-.8;
+    const normal=angle-Math.atan(growth),section=(i%3)*Math.PI*2/3+i*.17;
+    const thickness=lerp(.07,.20,t),offset=Math.cos(section)*thickness;
+    technical.push(point(radius*Math.cos(angle)+Math.cos(normal)*offset,radius*Math.sin(angle)+Math.sin(normal)*offset,Math.sin(section)*thickness,lerp(.12,.22,t),"spiral"));
   }
-  for(let i=0;i<37;i++){const t=i/36;technical.push(point(-2.9+t*5.8,-1.6+2.65*t+.17*Math.sin(t*Math.PI*2),.58,.11));}
-  for(const y of [-1.55,-.1,1.36])technical.push(...line([-2.85,y,-.4],[2.85,y,-.4],13,.06));
+  for(const axis of [0,1]){
+    const values=technical.map(p=>p.p[axis]),center=(Math.min(...values)+Math.max(...values))/2;
+    technical.forEach(p=>{p.p[axis]-=center;});
+  }
 
   // M: meridians and parallels form a globe, with depth from every angle.
   const macro=[];
@@ -59,10 +64,23 @@ export function buildSculptures(count=207) {
     macro.push(...ring(0,y,0,r,26,.125,"xz"));
   }
 
-  // O1: filled faceted cube surfaces, tilted so front, top and side stay visible.
+  // O1: irregular growth rings, shared grain and a narrow radial fissure.
   const onchain=[];
+  const radii=[.38,.83,1.30,1.80,2.34],totalRadius=radii.reduce((sum,r)=>sum+r,0);
+  for(let layer=0;layer<radii.length;layer++){
+    const radius=radii[layer];
+    const amount=layer===radii.length-1?count-onchain.length:Math.round(count*radius/totalRadius);
+    for(let i=0;i<amount;i++){
+      const angle=.30+.11+ i/Math.max(1,amount-1)*(Math.PI*2-.22);
+      const grain=1+.045*Math.sin(3*angle+.4)+.025*Math.cos(7*angle)+.012*Math.sin(11*angle+layer*.6);
+      const r=radius*grain;
+      onchain.push(point(r*Math.cos(angle)+.065*Math.sin(layer),r*Math.sin(angle)*.94,.10*Math.sin(2*angle+layer*.5),layer===4?.22:.17,`growth-ring-${layer}`));
+    }
+  }
+
+  // O2 reuses the closed, tilted cubes; recessed face cells form three carved glyphs.
   const blocks=[[-2.45,-.68,.65],[0,.1,0],[2.45,.88,-.65]];
-  function cube(center,edge,resolution,size,part="body",angles=[0,0,0]){
+  function cube(center,edge,resolution,size,part="body",angles=[0,0,0],glyph=null){
     const points=[];
     const rotate=(p)=>{
       let [x,y,z]=p;const [rx,ry,rz]=angles;
@@ -75,26 +93,23 @@ export function buildSculptures(count=207) {
     for(let u=0;u<resolution;u++)for(let v=0;v<resolution;v++)for(let w=0;w<resolution;w++){
       if(![u,v,w].some(n=>n===0||n===resolution-1))continue;
       const local=[u,v,w].map(n=>(n-(resolution-1)/2)*edge/resolution);
-      points.push({...point(...rotate(local),size,part),r:angles});
+      const carved=w===resolution-1 && glyph?.[resolution-1-v]?.[u]==="1";
+      if(carved)local[2]-=edge*.16;
+      points.push({...point(...rotate(local),carved?size*.60:size,carved?"inscription":part),r:angles});
     }
     return points;
   }
-  for(const center of blocks)onchain.push(...cube(center,1.65,5,.26,"block",[.22,-.38,.05]));
+  const ordinals=[];
+  const glyphs=[
+    ["00000","01010","01010","01110","00000"],
+    ["00000","01110","00100","00100","00000"],
+    ["00000","01110","01000","01110","00000"],
+  ];
+  blocks.forEach((center,index)=>ordinals.push(...cube(center,index===1?2.05:1.65,5,index===1?.32:.26,"block",[.22,-.38,.05],glyphs[index])));
   for(let i=0;i<2;i++){
     const a=blocks[i],b=blocks[i+1];
-    for(const z of [-.11,.11])onchain.push(...line([a[0]+.83,a[1],a[2]+z],[b[0]-.83,b[1],b[2]+z],8,.11,"link"));
+    ordinals.push(...line([a[0]+.83,a[1],a[2]],[b[0]-.83,b[1],b[2]],3,.11,"link"));
   }
-
-  // O2: a long handle, central collar and curved, tapered mining pick.
-  const ordinals=[];
-  for(const z of [-.16,.16])for(const x of [-.14,.14])ordinals.push(...line([x,-2.7,z],[x,1.46,z],23,.19,"handle"));
-  for(let i=0;i<42;i++){
-    const x=-2.55+i/41*5.1,y=1.75-.17*x*x;
-    const thickness=.10+.25*Math.pow(1-Math.abs(x)/2.55,.6);
-    for(const side of [-1,1])for(const z of [-.18,.18])ordinals.push(point(x,y+side*thickness*.4,z,thickness,"pick"));
-  }
-  ordinals.push(...ring(0,1.37,0,.37,16,.16,"xz"));
-  for(const p of ordinals){const [x,y,z]=p.p,a=-.22;p.p=[x*Math.cos(a)-y*Math.sin(a),x*Math.sin(a)+y*Math.cos(a),z];}
 
   // D: the small weight has the long arm; its lower end raises the heavy block.
   const derivatives=[];

@@ -11,7 +11,7 @@
     "build": "node scripts/build-verified.mjs",
     "start": "vinext start",
     "test": "npm run test:quick",
-    "test:quick": "node --test tests/contrast.test.mjs tests/journey.test.mjs tests/audio.test.mjs tests/accessibility.test.mjs",
+    "test:quick": "node --test tests/contrast.test.mjs tests/journey.test.mjs tests/audio.test.mjs tests/accessibility.test.mjs tests/sculptures.test.mjs",
     "typecheck": "tsc --noEmit",
     "check:quick": "npm run typecheck && npm run test:quick",
     "check:full": "npm run lint && npm run build && npm run test:quick",
