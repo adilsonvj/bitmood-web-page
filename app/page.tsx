@@ -28,7 +28,7 @@ export default function Home() {
   const [motionPaused,setMotionPaused]=useState(false);
   const [dialog,setDialog]=useState<"menu"|"privacy"|"channels"|null>(null);
   const [linkChoice,setLinkChoice]=useState("YouTube e redes sociais");
-  const {enabled:soundEnabled,available:soundAvailable,toggle:toggleSound,play}=useOceanSound();
+  const {enabled:soundEnabled,playing:soundPlaying,available:soundAvailable,toggle:toggleSound,play}=useOceanSound();
   const playRef=useRef(play);
   useEffect(()=>{playRef.current=play;},[play]);
   useEffect(()=>{dialogRef.current=dialog!==null;},[dialog]);
@@ -102,8 +102,8 @@ export default function Home() {
             <a href="#newsletter" onClick={event=>{event.preventDefault();navigate(0);}}>Newsletter <ArrowUpRight size={14}/></a>
           </nav>
           <div className="header-controls">
-            <button data-sound-toggle className={`sound-control ${soundEnabled?"is-on":""}`} onClick={toggleSound} aria-pressed={soundEnabled} aria-label={soundEnabled?"Desativar som ambiente":"Ativar som ambiente"} disabled={!soundAvailable}>
-              {soundEnabled?<Volume2 size={16}/>:<VolumeX size={16}/>}<span>Som {soundEnabled?"on":"off"}</span><span className="sound-bars" aria-hidden="true"><i/><i/><i/><i/></span>
+            <button data-sound-toggle className={`sound-control ${soundPlaying?"is-on":""}`} onClick={toggleSound} aria-pressed={soundPlaying} aria-label={!soundAvailable?"Som indisponível":soundPlaying?"Desativar som ambiente":"Ativar som ambiente"} disabled={!soundAvailable}>
+              {soundPlaying?<Volume2 size={16}/>:<VolumeX size={16}/>}<span>{!soundAvailable?"Sem áudio":soundPlaying?"Som on":soundEnabled?"Ativar som":"Som off"}</span><span className="sound-bars" aria-hidden="true"><i/><i/><i/><i/></span>
             </button>
             <button className="icon-control motion-control" onClick={toggleMotion} aria-label={motionPaused?"Ativar movimento contínuo":"Reduzir os movimentos"} aria-pressed={motionPaused} title={motionPaused?"Ativar movimento":"Reduzir movimentos"}>{motionPaused?<Play size={15}/>:<Pause size={15}/>}</button>
             <button className="icon-control menu-control" onClick={()=>setDialog("menu")} aria-label="Abrir navegação"><Menu size={20}/></button>

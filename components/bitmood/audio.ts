@@ -34,6 +34,7 @@ function makeEngine(): Engine {
 
 export function useOceanSound() {
   const [enabled, setEnabled] = useState(true), [available, setAvailable] = useState(true);
+  const [playing, setPlaying] = useState(false);
   const engine = useRef<Engine | null>(null), enabledRef = useRef(true), unlocking = useRef(false), alive = useRef(true);
   const lastCue = useRef(-10), lastWhale = useRef(-10);
 
@@ -42,20 +43,29 @@ export function useOceanSound() {
     unlocking.current = true;
     try {
       const audio = engine.current || (engine.current = makeEngine());
+      audio.context.onstatechange = () => {
+        if (alive.current && engine.current === audio) {
+          setPlaying(enabledRef.current && !document.hidden && audio.context.state === "running");
+        }
+      };
       if (audio.context.state === "suspended") await audio.context.resume();
       if (!alive.current || !enabledRef.current || audio.context.state !== "running") return;
       audio.master.gain.cancelScheduledValues(audio.context.currentTime);
       audio.master.gain.setTargetAtTime(.6, audio.context.currentTime, .65);
+      setPlaying(true);
     } catch {
       // A blocked autoplay attempt can be retried by the next real gesture.
     } finally { unlocking.current = false; }
   }, []);
 
   const toggle = useCallback(() => {
-    const next = !enabledRef.current; enabledRef.current = next; setEnabled(next);
+    // The first explicit activation must unlock audio, not mute a saved "on" preference.
+    const next = !(enabledRef.current && engine.current?.context.state === "running");
+    enabledRef.current = next; setEnabled(next);
     try { localStorage.setItem(preferenceKey, next ? "on" : "off"); } catch { /* Storage is optional. */ }
     if (next) void unlock();
     else if (engine.current) {
+      setPlaying(false);
       const { context, master } = engine.current;
       master.gain.cancelScheduledValues(context.currentTime); master.gain.setTargetAtTime(0, context.currentTime, .12);
     }
@@ -112,15 +122,15 @@ export function useOceanSound() {
     }
     function visibility() {
       const audio = engine.current; if (!audio) return;
-      if (document.hidden) void audio.context.suspend(); else if (enabledRef.current) void unlock();
+      if (document.hidden) { setPlaying(false); void audio.context.suspend(); } else if (enabledRef.current) void unlock();
     }
     window.addEventListener("pointerdown", gesture, { passive: true }); window.addEventListener("touchend", gesture, { passive: true }); window.addEventListener("keydown", gesture);
     document.addEventListener("visibilitychange", visibility);
     return () => {
       alive.current = false; window.removeEventListener("pointerdown", gesture); window.removeEventListener("touchend", gesture); window.removeEventListener("keydown", gesture); document.removeEventListener("visibilitychange", visibility);
       const audio = engine.current; engine.current = null;
-      if (audio) { audio.sources.forEach(source => { try { source.stop(); } catch { /* Already ended. */ } }); void audio.context.close(); }
+      if (audio) { audio.context.onstatechange = null; audio.sources.forEach(source => { try { source.stop(); } catch { /* Already ended. */ } }); void audio.context.close(); }
     };
   }, [unlock]);
-  return { enabled, available, toggle, play };
+  return { enabled, playing, available, toggle, play };
 }
