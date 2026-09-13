@@ -98,9 +98,14 @@ export function useOceanSound() {
   useEffect(() => {
     alive.current = true;
     const supported = Boolean(window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext);
-    setAvailable(supported);
     let preferred = true; try { preferred = localStorage.getItem(preferenceKey) !== "off"; } catch { /* No storage required. */ }
-    enabledRef.current = supported && preferred; setEnabled(enabledRef.current);
+    const preferredState = supported && preferred;
+    enabledRef.current = preferredState;
+    queueMicrotask(() => {
+      if (!alive.current) return;
+      setAvailable(supported);
+      setEnabled(preferredState);
+    });
     function gesture(event: Event) {
       if (!event.isTrusted || (event.target instanceof Element && event.target.closest('[data-sound-toggle]'))) return;
       void unlock();

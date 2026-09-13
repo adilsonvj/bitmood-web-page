@@ -24,13 +24,14 @@ export default function Home() {
   const [active,setActive]=useState(0);
   const [ready,setReady]=useState(false);
   const [graphicsFailed,setGraphicsFailed]=useState(false);
+  const [staticGraphics,setStaticGraphics]=useState(false);
   const [motionPaused,setMotionPaused]=useState(false);
   const [dialog,setDialog]=useState<"menu"|"privacy"|"channels"|null>(null);
   const [linkChoice,setLinkChoice]=useState("YouTube e redes sociais");
   const {enabled:soundEnabled,available:soundAvailable,toggle:toggleSound,play}=useOceanSound();
   const playRef=useRef(play);
-  dialogRef.current=dialog!==null;
   useEffect(()=>{playRef.current=play;},[play]);
+  useEffect(()=>{dialogRef.current=dialog!==null;},[dialog]);
 
   useEffect(()=>{
     const preference=window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -52,13 +53,23 @@ export default function Home() {
   useEffect(()=>{
     const host=worldRef.current;if(!host)return;
     const abort=new AbortController();let instance:{dispose:()=>void}|undefined;
-    import("@/components/bitmood/world.js").then(({createWorld})=>createWorld(host,{
+    const connection=(navigator as Navigator & {connection?:{saveData?:boolean}}).connection;
+    let frame=requestAnimationFrame(()=>{
+      frame=requestAnimationFrame(()=>{
+        if(abort.signal.aborted)return;
+        if(connection?.saveData){setStaticGraphics(true);setReady(true);return;}
+        void import("@/components/bitmood/world.js").then(({createWorld})=>{
+          if(abort.signal.aborted)return {dispose(){}};
+          return createWorld(host,{
       signal:abort.signal,getProgress:()=>progressRef.current,getMotion:()=>motionRef.current,
       onReady:()=>{if(!abort.signal.aborted)setReady(true);},
       onPulse:()=>playRef.current("whale"),
       onError:()=>{if(!abort.signal.aborted)setGraphicsFailed(true);},
-    })).then(result=>{instance=result;if(abort.signal.aborted)result.dispose();}).catch(error=>{if(error?.name!=="AbortError"&&!abort.signal.aborted){setGraphicsFailed(true);setReady(true);}});
-    return()=>{abort.abort();instance?.dispose();};
+          });
+        }).then(result=>{instance=result;if(abort.signal.aborted)result.dispose();}).catch(error=>{if(error?.name!=="AbortError"&&!abort.signal.aborted){setGraphicsFailed(true);setReady(true);}});
+      });
+    });
+    return()=>{cancelAnimationFrame(frame);abort.abort();instance?.dispose();};
   },[]);
 
   const navigate=useCallback((index:number)=>{
@@ -78,7 +89,7 @@ export default function Home() {
     <main ref={trackRef} className="journey" aria-label="O universo BITMOOD" aria-describedby="navigation-help">
       <div className="experience-stage" ref={stageRef}>
         <div ref={worldRef} className="world-canvas" role="img" aria-label={current.sculpture+". Escultura de facetas azuis e prateadas; o conteúdo de cada perspectiva está no texto."} />
-        {graphicsFailed&&<img className="fallback-whale" src="/images/whale-hero.webp" alt="" />}
+        {(!ready||graphicsFailed||staticGraphics)&&<img className="fallback-whale" src="/images/whale-hero.webp" alt="" fetchPriority="high" decoding="async" />}
         <div className="atmosphere" aria-hidden="true" />
         <div className="scene-bracket bracket-a" aria-hidden="true" /><div className="scene-bracket bracket-b" aria-hidden="true" />
         <span className="side-caption" aria-hidden="true">UMA LEITURA EM SETE DIMENSÕES</span>

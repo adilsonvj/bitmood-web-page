@@ -48,13 +48,15 @@ O formulário de newsletter registra inscrições no banco D1 por meio da API ex
 
 ## Verificação
 
+O motor 3D já usa importação dinâmica. A abertura exibe a imagem estática até o primeiro render da cena; a inicialização aguarda uma oportunidade de pintura da interface. Quando o navegador informa `connection.saveData`, a página mantém a imagem estática sem importar o motor nem baixar a geometria. Navegadores sem essa indicação continuam usando o 3D normalmente. Isso não substitui medição de LCP/CLS nem testes em aparelhos reais.
+
 A implementação foi verificada com build de produção, TypeScript, testes do controlador de navegação e inspeção de renders locais das geometrias. Os testes cobrem ciclos nos dois sentidos, encaixe antes/depois da metade, término de toque, teclado, formulários, diálogos e movimento reduzido. A fluidez, o áudio e o enquadramento no navegador ainda precisam ser avaliados nos dispositivos de destino.
 
 ```bash
-node --test tests/journey.test.mjs
-npx tsc --noEmit --incremental false
-npm run build
+npm run check:quick
 ```
+
+`check:quick` executa TypeScript e os testes direcionados de navegação e contraste sem gerar o site. Use `npm run check:full` uma única vez ao concluir mudanças em dependências, build, Worker/Cloudflare, navegação principal ou Three.js; ele inclui lint, build de produção e os testes direcionados. O build é a verificação de integração com o runtime Cloudflare; o bundle gerado não deve ser importado diretamente pelo Node, pois contém módulos `cloudflare:` fornecidos pelo Worker.
 
 ## Executar a cópia deste repositório
 
@@ -65,7 +67,7 @@ npm ci
 npm run dev
 ```
 
-Abra o endereço local exibido pelo servidor. Para gerar o build de produção, use `npm run build`; o script incluído requer Bash e GNU `timeout` (disponíveis em Linux/WSL). A API de newsletter depende do binding Cloudflare D1 `DB` e da aplicação das migrações em `drizzle/`.
+Abra o endereço local exibido pelo servidor. Os comandos de desenvolvimento, lint, banco e build funcionam em Windows, macOS e Linux; `npm run build` aplica um limite padrão de três minutos. O helper reforçado `npm run install:ci` continua reservado ao ambiente Linux controlado do Sites. A API de newsletter depende do binding Cloudflare D1 `DB` e da aplicação das migrações em `drizzle/`.
 
 Esta versão usa React, Vinext e Three.js e precisa do build e do Worker para servir a aplicação e sua API.
 

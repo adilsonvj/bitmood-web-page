@@ -1,0 +1,6 @@
+# Avoid loading generated geometry and runtime declarations into textual diffs.
+public/experience/*.json -diff linguist-generated=true
+worker-configuration.d.ts -diff linguist-generated=true
+
+# Lockfiles stay reviewable, but GitHub classifies their bulk content as generated.
+package-lock.json linguist-generated=true

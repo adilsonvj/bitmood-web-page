@@ -1,0 +1,15 @@
+# Large generated artifacts. Pass an explicit path when work really needs them.
+public/experience/*.json
+worker-configuration.d.ts
+package-lock.json
+
+# Preserved history and vendored styles are outside normal product-code searches.
+legacy/
+vendor/
+
+# Local build/runtime output.
+.next/
+dist/
+.wrangler/
+.sites-runtime/
+node_modules/

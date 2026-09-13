@@ -6,3 +6,13 @@
 - A experiência tem dez cenas em ciclo, fundo fixo, animação como elemento principal e textos breves. A newsletter fica na abertura com a baleia-azul e o filhote. Mantenha as definições das sete verticais em `lib/bitmood/chapters.ts`.
 - Preserve a navegação por teclado, o encaixe na cena mais próxima e a preferência de movimento reduzido. O som inicia habilitado, toca após uma interação permitida pelo navegador e respeita a preferência salva de silêncio.
 - Mantenha `legacy/` e o histórico anterior do repositório. Os canais só devem receber URLs oficiais confirmados pelo proprietário.
+
+## Economia de contexto e validação
+
+- Respeite o escopo pedido pelo usuário. Não acrescente refatorações, pesquisas ou funcionalidades paralelas a uma mudança pequena.
+- Comece buscas em `app/`, `components/bitmood/`, `lib/bitmood/`, `db/`, `worker/` e `tests/`, restringindo-as aos arquivos relacionados à tarefa.
+- Não abra `public/experience/*.json`, `worker-configuration.d.ts`, `package-lock.json`, `legacy/` ou `vendor/` em tarefas comuns. Quando um desses artefatos for relevante, prefira tamanho, hash ou busca direcionada em vez de imprimir o conteúdo completo.
+- Não use subagentes, pesquisa web, geração de imagem ou automação de navegador em alterações locais simples, salvo quando o usuário pedir ou a validação visual exigir.
+- Para texto, metadados e CSS local, execute somente o teste diretamente relacionado. Para React, acessibilidade e estado, use `npm run check:quick` quando aplicável.
+- Reserve `npm run check:full` para mudanças em dependências, build, Worker/Cloudflare, navegação principal ou Three.js, ou quando o usuário pedir a verificação completa.
+- Depois que uma verificação passar, não a repita sem uma nova alteração relevante. Execute no máximo um build completo na etapa final.
