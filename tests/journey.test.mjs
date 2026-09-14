@@ -39,18 +39,19 @@ function harness({ nativeSnap = false, count = 10 } = {}) {
 }
 
 test('the about chapter fits between pillars and channels without shifting the sculptures', () => {
-  const h=harness({count:11});
+  const h=harness({count:12});
   try {
     h.setMotion(false); h.advance(32);
-    for (const [index, sculpture] of [[8,8],[9,8],[10,9],[11,0],[-1,9]]) {
+    for (const [index, sculpture] of [[8,8],[9,8],[10,9],[11,10],[12,0],[-1,10]]) {
       h.controller.go(index); h.advance(32);
-      assert.equal(h.scenes.at(-1), wrapScene(index,11));
+      assert.equal(h.scenes.at(-1), wrapScene(index,12));
       assert.equal(worldProgress(h.progress.current),sculpture);
     }
     for (const index of [0,1,2,3,4,5,6,7,8]) assert.equal(worldProgress(index),index);
     assert.equal(worldProgress(8.5),8);
     assert.equal(worldProgress(9.5),8.5);
     assert.equal(worldProgress(10.5),9.5);
+    assert.equal(worldProgress(11.5),10);
   } finally {h.close();}
 });
 
