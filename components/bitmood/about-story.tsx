@@ -28,14 +28,18 @@ export function AboutStory({ embedded = false }: { embedded?: boolean }) {
       </div>
       <section className={styles.story} aria-label="O cartão que começou a história">
         <div className={styles.copy}>{beginning.slice(0,2).map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>
-        <aside className={styles.photos} aria-label="O cartão da Foxbit">
+        <aside className={styles.photos} aria-label="Entrada na USP e o cartão da Foxbit">
+          <figure className={styles.portrait}>
+            <img src="/images/sobre/adilson-usp-2016.webp" width="540" height="960" alt="Adilson aos 19 anos, em 2016, como bixo de Engenharia de Computação na USP, em São Carlos." decoding="async" />
+            <figcaption><span>01 / BIXO NA USP</span>Aos 19 anos, entrando na Engenharia de Computação da USP em 2016 — o mesmo ano da palestra da Foxbit.</figcaption>
+          </figure>
           <figure>
-            <img src="/images/sobre/foxbit-frente.webp" width="1400" height="871" alt="Frente do cartão da Foxbit, com a marca laranja e a inscrição bitcoin wallet." decoding="async" />
-            <figcaption><span>01 / O COMEÇO</span>O cartão da palestra de 2016.</figcaption>
+            <img src="/images/sobre/foxbit-frente.webp" width="1400" height="871" alt="Frente do cartão da Foxbit, com a marca laranja e a inscrição bitcoin wallet." loading="lazy" decoding="async" />
+            <figcaption><span>02 / O CARTÃO</span>O cartão da palestra de 2016.</figcaption>
           </figure>
           <figure>
             <img src="/images/sobre/foxbit-verso.webp" width="1400" height="875" alt="Verso do cartão da Foxbit. QR code e endereço da carteira ocultos por segurança." loading="lazy" decoding="async" />
-            <figcaption><span>02 / O VERSO</span>O verso do mesmo cartão, com os dados de acesso ocultos.</figcaption>
+            <figcaption><span>03 / O VERSO</span>O verso do mesmo cartão, com os dados de acesso ocultos.</figcaption>
           </figure>
         </aside>
         <div className={`${styles.copy} ${styles.continuation}`}>
@@ -50,7 +54,7 @@ export function AboutStory({ embedded = false }: { embedded?: boolean }) {
         <aside className={styles.photos} aria-label="Uma lembrança com Andressa">
           <figure>
             <img src="/images/sobre/adilson-andressa-londres.webp" width="1672" height="941" alt="Adilson e Andressa sorrindo diante de uma baleia no Museu de História Natural de Londres." loading="lazy" decoding="async" />
-            <figcaption><span>03 / FORA DOS DADOS</span>Com Andressa no meu aniversário de 30 anos no Museu de História Natural de Londres :)</figcaption>
+            <figcaption><span>04 / FORA DOS DADOS</span>Com Andressa no meu aniversário de 30 anos no Museu de História Natural de Londres :)</figcaption>
           </figure>
         </aside>
         <div className={`${styles.copy} ${styles.continuation}`}>

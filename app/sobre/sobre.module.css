@@ -19,6 +19,7 @@
 .copy .statement { font-size:clamp(24px,2.4vw,32px); line-height:1.5; color:#f2f6fb; letter-spacing:-.025em; padding:12px 0; }
 .photos { position:sticky; top:32px; min-width:0; grid-column:2; grid-row:1 / span 2; }
 .photos figure { margin:0 0 32px; }
+.photos .portrait { max-width:300px; }
 .photos img { display:block; width:100%; height:auto; border-radius:5px; border:1px solid #a8c4dc33; }
 .photos figcaption { margin-top:16px; font-size:13px; line-height:1.7; color:#a8c4dc; max-width:48ch; }
 .photos figcaption span { display:block; font:11px/1.6 var(--font-mono); letter-spacing:1.3px; margin-bottom:5px; color:#8fa6c4; }
