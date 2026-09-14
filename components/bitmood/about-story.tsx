@@ -1,5 +1,4 @@
 import { ArrowUpRight } from "lucide-react";
-import { channels } from "@/lib/bitmood/chapters";
 import styles from "@/app/sobre/sobre.module.css";
 
 const beginning = [
@@ -10,15 +9,14 @@ const beginning = [
   "Foi ali que começou tudo. De 2016 para cá, estudei esse universo obsessivamente. Ganhei dinheiro, perdi dinheiro, acertei por sorte e errei com convicção. E, em quase dez anos, nunca encontrei o que eu mais queria: um método honesto que me dissesse quando comprar e quando parar.",
 ];
 const method = [
-  "Sou Cristão, Araraquarense, e hoje moro em Luxemburgo com minha linda esposa, Andressa. Trabalho há cinco anos com dados na Amazon, sou engenheiro de computação e doutor em Ciências de Computação, os dois pela USP. Minha pesquisa é em inteligência artificial e redes complexas — a área que estuda como um comportamento coletivo emerge de milhões de decisões individuais. Levei tempo demais para perceber que eu tinha passado anos estudando, em teoria, exatamente aquilo que o Bitcoin é na prática.",
+  "Sou Cristão, saí do interior de São Paulo e hoje moro em Luxemburgo com minha linda esposa, Andressa. Trabalho há cinco anos com dados na Amazon, sou engenheiro de computação e doutor em Ciências de Computação, os dois pela USP. Minha pesquisa é em inteligência artificial e redes complexas — a área que estuda como um comportamento coletivo emerge de milhões de decisões individuais. Levei tempo demais para perceber que eu tinha passado anos estudando, em teoria, exatamente aquilo que o Bitcoin é na prática.",
   "O BITMOOD é a tentativa de construir o método que eu nunca achei.",
   "Na prática, é análise das notícias que movem o mercado — só que feita do jeito que fui treinado a fazer: olhando o dado antes da manchete, separando sinal de barulho, e mostrando o raciocínio inteiro em vez do veredito.",
-  "Toda vez que o Bitcoin se move, aparecem dez explicações. O trabalho aqui é testar quais delas param de pé: quais dados sustentam aquilo, o que esses dados não conseguem dizer, e onde a análise pode estar errada. Nada de grito, preço-alvo ou \"última chance de comprar\". Quando a resposta for \"não dá para saber\", vai estar escrito assim.",
+  "Toda vez que o Bitcoin se move, aparecem dez explicações. O trabalho aqui é testar quais delas param de pé: quais dados sustentam aquilo, o que esses dados não conseguem dizer, e onde a análise pode estar errada. Nada de grito, preço-alvo ou \"última chance de comprar\". Quando a resposta for \"não dá para saber\", vai estar escrito assim, não forjo hipóteses.",
   "Certeza ninguém tem sobre Bitcoin. O que existe aqui é método, transparência e uma obsessão em mostrar a conta — o suficiente para você formar a sua própria opinião em vez de adotar a minha.",
 ];
 
 export function AboutStory({ embedded = false }: { embedded?: boolean }) {
-  const youtube = channels.find(channel => channel.kind === "youtube" && channel.href);
   const Heading = embedded ? "h2" : "h1";
   return <article className={`${styles.main} ${embedded ? styles.embedded : ""}`}>
       <div className={styles.intro}>
@@ -44,9 +42,8 @@ export function AboutStory({ embedded = false }: { embedded?: boolean }) {
         </aside>
         <div className={`${styles.copy} ${styles.continuation}`}>
           {beginning.slice(2,4).map((paragraph,index)=><p key={index}>{paragraph}</p>)}
-          <blockquote className={styles.quote}><p>“Moedas perdidas apenas fazem com que as moedas de todos os outros valham um pouco mais.”</p><footer>Satoshi Nakamoto</footer></blockquote>
+          <blockquote className={styles.quote}><p>“Moedas perdidas apenas fazem com que as moedas de todos os outros valham um pouco mais.”</p><footer>Satoshi Nakamoto — fórum Bitcointalk, 21 de junho de 2010</footer></blockquote>
           <p>{beginning[4]}</p>
-          <blockquote className={styles.quote}><p>“Consigo calcular o movimento dos corpos celestes, mas não a loucura das pessoas.”</p><footer>Frase atribuída a Isaac Newton</footer></blockquote>
         </div>
       </section>
       <section className={styles.story} aria-label="Quem sou e por que criei o BITMOOD">
@@ -54,15 +51,15 @@ export function AboutStory({ embedded = false }: { embedded?: boolean }) {
         <aside className={styles.photos} aria-label="Uma lembrança com Andressa">
           <figure>
             <img src="/images/sobre/adilson-andressa-londres.webp" width="1672" height="941" alt="Adilson e Andressa sorrindo diante de uma baleia no Museu de História Natural de Londres." loading="lazy" decoding="async" />
-            <figcaption><span>04 / FORA DOS DADOS</span>Com Andressa no meu aniversário de 30 anos no Museu de História Natural de Londres :)</figcaption>
+            <figcaption><span>04 / FORA DOS DADOS</span>Com Andressa no meu aniversário de 30 anos no Natural History Museum em Londres :)</figcaption>
           </figure>
         </aside>
         <div className={`${styles.copy} ${styles.continuation}`}>
           {method.slice(1,3).map((paragraph,index)=><p key={index} className={index===0?styles.statement:undefined}>{paragraph}</p>)}
-          <blockquote className={styles.quote}><p>“Todos os modelos estão errados, mas alguns são úteis.”</p><footer>George E. P. Box</footer></blockquote>
+          <blockquote className={styles.quote}><p>“Hypotheses non fingo” — não forjo hipóteses.</p><footer>Isaac Newton — <i>Principia</i>, Escólio Geral, 1713</footer></blockquote>
           {method.slice(3).map((paragraph,index)=><p key={index}>{paragraph}</p>)}
-          <p>Se isso faz sentido, é só acompanhar.</p>
-          <a className={styles.channel} href={youtube?.href ?? "/#canais"}>{youtube ? "Ir para o canal" : "Ver canais do BITMOOD"}<ArrowUpRight size={21} /></a>
+          <p>Se isso faz sentido pra você, a próxima leitura chega no seu e-mail.</p>
+          <a className={styles.channel} href={embedded ? "#newsletter" : "/#newsletter"}>Receber a newsletter <ArrowUpRight size={21} /></a>
         </div>
       </section>
     </article>;
