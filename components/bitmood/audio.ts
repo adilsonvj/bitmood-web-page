@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type Engine = { context: AudioContext; master: GainNode; noise: AudioBuffer; sources: Set<AudioScheduledSourceNode> };
 type Sound = "select" | "whale" | "transition";
+type PlaybackSession = { type: string };
 const preferenceKey = "bitmood-sound";
 
 function makeEngine(): Engine {
@@ -37,10 +38,33 @@ export function useOceanSound() {
   const [playing, setPlaying] = useState(false);
   const engine = useRef<Engine | null>(null), enabledRef = useRef(true), alive = useRef(true);
   const lastCue = useRef(-10), lastWhale = useRef(-10);
+  const explicitPlayback = useRef(false);
+  const ownedSession = useRef<{ session: PlaybackSession; previous: string } | null>(null);
+
+  const releaseSession = useCallback(() => {
+    const owned = ownedSession.current; ownedSession.current = null;
+    if (owned) {
+      try { if (owned.session.type === "playback") owned.session.type = owned.previous; } catch { /* Optional API. */ }
+    }
+  }, []);
+
+  const claimSession = useCallback(() => {
+    if (!explicitPlayback.current || ownedSession.current) return;
+    try {
+      const session = (navigator as Navigator & { audioSession?: PlaybackSession }).audioSession;
+      if (!session) return;
+      const previous = session.type;
+      session.type = "playback";
+      ownedSession.current = { session, previous };
+    } catch { /* Older browsers retain the standard Web Audio path. */ }
+  }, []);
 
   const unlock = useCallback(async () => {
     if (!enabledRef.current || !alive.current || document.hidden) return;
     try {
+      // Only an explicit sound-button activation opts into media playback.
+      // On iOS this avoids Web Audio being silenced by the ringer switch.
+      claimSession();
       const audio = engine.current || (engine.current = makeEngine());
       audio.context.onstatechange = () => {
         if (alive.current && engine.current === audio) {
@@ -55,22 +79,24 @@ export function useOceanSound() {
       audio.master.gain.setTargetAtTime(.6, audio.context.currentTime, .65);
       setPlaying(true);
     } catch {
+      releaseSession();
       // A blocked autoplay attempt can be retried by the next real gesture.
     }
-  }, []);
+  }, [claimSession, releaseSession]);
 
   const toggle = useCallback(() => {
     // The first explicit activation must unlock audio, not mute a saved "on" preference.
     const next = !(enabledRef.current && engine.current?.context.state === "running");
     enabledRef.current = next; setEnabled(next);
     try { localStorage.setItem(preferenceKey, next ? "on" : "off"); } catch { /* Storage is optional. */ }
-    if (next) void unlock();
+    if (next) { explicitPlayback.current = true; void unlock(); }
     else if (engine.current) {
+      explicitPlayback.current = false; releaseSession();
       setPlaying(false);
       const { context, master } = engine.current;
       master.gain.cancelScheduledValues(context.currentTime); master.gain.setTargetAtTime(0, context.currentTime, .12);
     }
-  }, [unlock]);
+  }, [unlock, releaseSession]);
 
   const play = useCallback((kind: Sound, index = 0) => {
     const audio = engine.current;
@@ -123,15 +149,16 @@ export function useOceanSound() {
     }
     function visibility() {
       const audio = engine.current; if (!audio) return;
-      if (document.hidden) { setPlaying(false); void audio.context.suspend().catch(() => {}); } else if (enabledRef.current) void unlock();
+      if (document.hidden) { setPlaying(false); releaseSession(); void audio.context.suspend().catch(() => {}); } else if (enabledRef.current) void unlock();
     }
     window.addEventListener("pointerdown", gesture, { passive: true }); window.addEventListener("touchend", gesture, { passive: true }); window.addEventListener("keydown", gesture);
     document.addEventListener("visibilitychange", visibility);
     return () => {
       alive.current = false; window.removeEventListener("pointerdown", gesture); window.removeEventListener("touchend", gesture); window.removeEventListener("keydown", gesture); document.removeEventListener("visibilitychange", visibility);
       const audio = engine.current; engine.current = null;
+      explicitPlayback.current = false; releaseSession();
       if (audio) { audio.context.onstatechange = null; audio.sources.forEach(source => { try { source.stop(); } catch { /* Already ended. */ } }); void audio.context.close(); }
     };
-  }, [unlock]);
+  }, [unlock, releaseSession]);
   return { enabled, playing, available, toggle, play };
 }

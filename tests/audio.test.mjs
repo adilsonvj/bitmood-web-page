@@ -9,7 +9,7 @@ const source = ts.transpileModule(readFileSync(new URL('../components/bitmood/au
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
-function harness({ preference, blocked = false, supported = true, pending = false } = {}) {
+function harness({ preference, blocked = false, supported = true, pending = false, audioSession } = {}) {
   const slots = [], effects = [], contexts = [], storage = new Map();
   if (preference) storage.set('bitmood-sound', preference);
   let cursor = 0;
@@ -53,7 +53,7 @@ function harness({ preference, blocked = false, supported = true, pending = fals
   if (supported) window.AudioContext = AudioContext;
   runInNewContext(source, {
     exports, require: name => { assert.equal(name, 'react'); return react; },
-    window, document, Element: class {}, queueMicrotask,
+    window, document, navigator: { audioSession }, Element: class {}, queueMicrotask,
     localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) },
   });
   const render = () => { cursor = 0; return exports.useOceanSound(); };
@@ -142,4 +142,34 @@ test('a pending resume does not prevent a fresh activation gesture from retrying
     assert.equal(h.contexts[0].resumeCalls,2);
     assert.equal(h.render().playing,true);
   } finally { h.cleanup(); await flush(); }
+});
+
+test('explicit activation claims playback and mute, hiding and cleanup release it', async () => {
+  const audioSession={type:'auto'},h=harness({audioSession});
+  try {
+    await flush(); assert.equal(audioSession.type,'auto');
+    h.render().toggle(); await flush();
+    assert.equal(audioSession.type,'playback');
+    h.render().toggle(); assert.equal(audioSession.type,'auto');
+    h.render().toggle(); await flush();
+    h.document.hidden=true; h.document.dispatchEvent(new Event('visibilitychange'));
+    assert.equal(audioSession.type,'auto');
+    h.document.hidden=false; h.document.dispatchEvent(new Event('visibilitychange')); await flush();
+    assert.equal(audioSession.type,'playback');
+  } finally {h.cleanup();}
+  assert.equal(audioSession.type,'auto');
+});
+
+test('blocked activation releases the session; rejected session API still allows audio', async () => {
+  const audioSession={type:'ambient'},h=harness({audioSession,blocked:true});
+  try {
+    await flush(); h.render().toggle(); await flush();
+    assert.equal(audioSession.type,'ambient');
+    assert.equal(h.render().playing,false);
+  } finally {h.cleanup();}
+  const rejected=harness({audioSession:{get type(){return 'auto';},set type(value){throw new Error(value);}}});
+  try {
+    await flush(); rejected.render().toggle(); await flush();
+    assert.equal(rejected.render().playing,true);
+  } finally {rejected.cleanup();}
 });
