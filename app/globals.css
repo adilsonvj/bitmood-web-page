@@ -225,6 +225,9 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
 }
 
 /* Finish reading long copy without chaining a touch drag into the scene track. */
+.scene-copy.about-scene { left:0; right:0; top:90px; bottom:75px; width:100%; max-width:none; max-height:none; margin:0; padding:0; background:#071b2e; scrollbar-width:thin; }
+.bitmood[data-scene="sobre"] :is(.vertical-rail,.sculpture-caption,.side-caption,.scene-bracket) { visibility:hidden; }
+@media(max-width:899px) { .scene-copy.about-scene { top:78px; bottom:65px; } }
 @media(pointer:coarse) {
   .scene-copy { overscroll-behavior-y: contain; }
 }

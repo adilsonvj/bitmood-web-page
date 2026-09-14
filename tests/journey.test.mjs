@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createJourney, wrapScene, recenterScroll } from '../lib/bitmood/navigation.js';
+import { worldProgress } from '../lib/bitmood/world-progress.js';
 
 // Exercise the event-driven controller without a browser or a network service.
-function harness({ nativeSnap = false } = {}) {
+function harness({ nativeSnap = false, count = 10 } = {}) {
   const saved = new Map(), frames = new Map(), timers = new Map();
   let now = 0, serial = 0, blocked = false, motion = true, focused = false;
   const body = { closest: () => null }, properties = {}, scenes = [];
@@ -28,7 +29,7 @@ function harness({ nativeSnap = false } = {}) {
   };
   for (const [key,value] of Object.entries(globals)) { saved.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{configurable:true,writable:true,value}); }
   const stage={clientHeight:800},copy={scrollTop:0,querySelector:()=>({focus:()=>{focused=true;}})},root={style:{setProperty:(key,value)=>{properties[key]=value;}},querySelector:()=>copy};
-  const controller=createJourney({root,track,stage,count:10,progress,getMotion:()=>motion,isBlocked:()=>blocked,onScene:index=>scenes.push(index)});
+  const controller=createJourney({root,track,stage,count,progress,getMotion:()=>motion,isBlocked:()=>blocked,onScene:index=>scenes.push(index)});
   return { win,doc,track,progress,controller,emit,scenes,properties,stage,
     step:800,
     advance(ms) { const end=now+ms;while(now<end){now=Math.min(end,now+16);for(const [id,item] of [...timers])if(item.at<=now){timers.delete(id);item.fn();}const batch=[...frames];frames.clear();for(const [,fn] of batch)fn(now);} },
@@ -36,6 +37,22 @@ function harness({ nativeSnap = false } = {}) {
     close() {controller.dispose();for(const [key,descriptor] of saved){if(descriptor)Object.defineProperty(globalThis,key,descriptor);else delete globalThis[key];}},
   };
 }
+
+test('the about chapter fits between pillars and channels without shifting the sculptures', () => {
+  const h=harness({count:11});
+  try {
+    h.setMotion(false); h.advance(32);
+    for (const [index, sculpture] of [[8,8],[9,8],[10,9],[11,0],[-1,9]]) {
+      h.controller.go(index); h.advance(32);
+      assert.equal(h.scenes.at(-1), wrapScene(index,11));
+      assert.equal(worldProgress(h.progress.current),sculpture);
+    }
+    for (const index of [0,1,2,3,4,5,6,7,8]) assert.equal(worldProgress(index),index);
+    assert.equal(worldProgress(8.5),8);
+    assert.equal(worldProgress(9.5),8.5);
+    assert.equal(worldProgress(10.5),9.5);
+  } finally {h.close();}
+});
 
 test('the journey loops in both directions without clamping or losing its logical position', () => {
   const h=harness();
