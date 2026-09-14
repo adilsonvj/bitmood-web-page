@@ -1,16 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, CandlestickChart, Check, ChevronLeft, ChevronRight, Box, Fish, Pickaxe, Globe2, Landmark, Menu, MoveHorizontal, Pause, Play, Radio, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight, Menu, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Newsletter } from "@/components/bitmood/newsletter";
 import { AboutStory } from "@/components/bitmood/about-story";
+import { PillarIndex } from "@/components/bitmood/pillar-index";
+import { PillarNav } from "@/components/bitmood/pillar-nav";
 import { worldProgress } from "@/lib/bitmood/world-progress.js";
 import { useOceanSound } from "@/components/bitmood/audio";
 import { createJourney, wrapScene } from "@/lib/bitmood/navigation.js";
 import { chapters, channels } from "@/lib/bitmood/chapters";
 
-const verticalIcons = [Fish, Landmark, CandlestickChart, Globe2, Box, Pickaxe, MoveHorizontal];
 const lastChapter=chapters.length-1;
 const channelsChapter=chapters.findIndex(chapter=>chapter.id==="canais");
 const newsletterChapter=chapters.findIndex(chapter=>chapter.id==="newsletter");
@@ -87,7 +88,7 @@ export default function Home() {
   const current=chapters[active];
 
   return <div ref={rootRef} className={`bitmood ${ready?"is-ready":"is-loading"} ${graphicsFailed?"graphics-fallback":""} ${motionPaused?"motion-paused":""}`} data-scene={current.id}>
-    <a className="skip-link" href="#baleias" onClick={event=>{event.preventDefault();navigate(2);}}>Ir para as perspectivas</a>
+    <a className="skip-link" href="#perspectivas" onClick={event=>{event.preventDefault();navigate(1);}}>Ir para as perspectivas</a>
     <p id="navigation-help" className="sr-only">Use as setas para mudar de cena, Home para o início e End para a newsletter. O percurso se repete. Tab e Shift mais Tab percorrem os controles e o conteúdo. Quando um texto não couber, as setas para cima e para baixo rolam o texto; as setas laterais continuam mudando de cena.</p>
     <p className="sr-only" aria-live="polite" aria-atomic="true">Seção {active+1} de {chapters.length}: {current.nav}.</p>
     <main ref={trackRef} className="journey" aria-label="O universo BITMOOD" aria-describedby="navigation-help">
@@ -101,8 +102,8 @@ export default function Home() {
         <header className="scene-header">
           <a href="#inicio" className="wordmark" aria-label="BITMOOD — início" onClick={event=>{event.preventDefault();navigate(0);}}><img src="/brand/whale.svg" width="42" height="26" alt="" /><span>BITMOOD<span className="brand-dot">.</span></span></a>
           <nav className="header-navigation" aria-label="Navegação principal">
-            <a href="#baleias" onClick={event=>{event.preventDefault();navigate(2);}}>Perspectivas</a>
-            <a href="#sobre" onClick={event=>{event.preventDefault();navigate(9);}}>Sobre mim</a>
+            <a href="#perspectivas" onClick={event=>{event.preventDefault();navigate(1);}}>Perspectivas</a>
+            <a href="#sobre" onClick={event=>{event.preventDefault();navigate(2);}}>Sobre mim</a>
             <a href="#canais" onClick={event=>{event.preventDefault();navigate(channelsChapter);}}>Canais</a>
             <a href="#newsletter" onClick={event=>{event.preventDefault();navigate(newsletterChapter);}}>Newsletter <ArrowUpRight size={14}/></a>
           </nav>
@@ -117,22 +118,19 @@ export default function Home() {
 
         {!ready&&!graphicsFailed&&<div className="world-loading" role="status"><span>Formando as baleias</span><i/><small>BITMOOD / EXPLORE</small></div>}
 
-        <nav className="vertical-rail" aria-label="As sete perspectivas BITMOOD">
-          {chapters.slice(2,9).map((chapter,index)=><a key={chapter.id} href={`#${chapter.id}`} aria-label={chapter.nav} aria-current={active===index+2?"step":undefined} onClick={event=>{event.preventDefault();navigate(index+2);}}><span>{chapter.letter}</span><span className="rail-title">{chapter.nav}</span></a>)}
-        </nav>
+        <PillarNav />
 
         <div className="scene-copy-zone">
           {chapters.map((chapter,index)=>{
+            if(chapter.id==="perspectivas")return <section key={chapter.id} className={`scene-copy pillar-index ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-perspectivas" aria-hidden={index!==active} inert={index!==active}><p className="scene-eyebrow">UMA METODOLOGIA. SETE PERSPECTIVAS.</p><h2 tabIndex={-1} id="title-perspectivas">Sete pilares. Uma leitura conectada.</h2><PillarIndex active={index===active} /></section>;
             if(chapter.id==="sobre") return <section key={chapter.id} className={`scene-copy about-scene ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-sobre" aria-hidden={index!==active} inert={index!==active}><AboutStory embedded /></section>;
-            const Icon=index>=2&&index<=8?verticalIcons[index-2]:null;
             return <section key={chapter.id} className={`scene-copy ${index===active?"is-active":""} ${chapter.id==="newsletter"?"newsletter-copy":""}`} tabIndex={index===active?0:-1} aria-labelledby={`title-${chapter.id}`} aria-hidden={index!==active} inert={index!==active}>
-              <p className="scene-eyebrow">{Icon&&<Icon size={17} strokeWidth={1.4}/>}<span>{chapter.eyebrow}</span></p>
+              <p className="scene-eyebrow"><span>{chapter.eyebrow}</span></p>
               {index===0?<h1 tabIndex={-1} id={`title-${chapter.id}`}>{chapter.title[0]}<br/>{chapter.title[1]}</h1>:<h2 tabIndex={-1} id={`title-${chapter.id}`}>{chapter.title[0]}<br/>{chapter.title[1]}</h2>}
               <p className="scene-description">{chapter.description}</p>
-              {index>=2&&index<=8&&<p className="scene-signals">{chapter.signals}</p>}
 
-              {chapter.id==="canais"&&<div className="channels-list">{channels.map(channel=>channel.href?<a className="channel-action" href={channel.href} target="_blank" rel="noopener noreferrer" key={channel.label}>{channel.kind==="youtube"?<Play size={18}/>:<Radio size={18}/>}<span>{channel.label}</span><ArrowUpRight size={18}/></a>:<button className="channel-action" key={channel.label} onClick={()=>{setLinkChoice(channel.label);setDialog("channels");}}>{channel.kind==="youtube"?<Play size={18}/>:<Radio size={18}/>}<span>{channel.label}<small>Em breve</small></span><ArrowUpRight size={18}/></button>)}</div>}
-              {index===0&&<button className="join-button hero-action" onClick={()=>navigate(2)}>Conheça os pilares <ArrowRight size={17}/></button>}
+              {chapter.id==="canais"&&<div className="channels-list">{channels.filter((channel,index)=>channel.href||(!channels.some(item=>item.href)&&index===0)).map(channel=>channel.href?<a className="channel-action" href={channel.href} target="_blank" rel="noopener noreferrer" key={channel.label}><Play size={18}/><span>{channel.label}</span><ArrowUpRight size={18}/></a>:<button className="channel-action" key={channel.label} onClick={()=>{setLinkChoice(channel.label);setDialog("channels");}}><Play size={18}/><span>{channel.label}<small>Em breve</small></span><ArrowUpRight size={18}/></button>)}</div>}
+              {index===0&&<button className="join-button hero-action" onClick={()=>navigate(1)}>Conheça os pilares <ArrowRight size={17}/></button>}
               {chapter.id==="newsletter"&&<><Newsletter/><button className="privacy-link" onClick={()=>setDialog("privacy")}>Sobre seu cadastro <ArrowUpRight size={13}/></button></>}
             </section>;
           })}
@@ -152,7 +150,7 @@ export default function Home() {
     <Dialog open={dialog!==null} onOpenChange={open=>{if(!open)setDialog(null);}}><DialogContent className={`bitmood-dialog ${dialog==="menu"?"navigation-dialog":""}`} showCloseButton={false}>
       <DialogClose className="dialog-close icon-control" aria-label="Fechar"><X size={20}/></DialogClose>
       <DialogHeader><span className="dialog-eyebrow">UNIVERSO BITMOOD</span><DialogTitle>{dialog==="menu"?"Escolha uma perspectiva.":dialog==="privacy"?"Seu e-mail, com propósito.":linkChoice}</DialogTitle><DialogDescription>{dialog==="menu"?"Explore as forças que ajudam a explicar o Bitcoin.":dialog==="privacy"?"Seu cadastro registra o e-mail, a data e o consentimento para a newsletter BITMOOD.":"Os links oficiais serão disponibilizados aqui. Entre na newsletter para acompanhar as próximas novidades."}</DialogDescription></DialogHeader>
-      {dialog==="menu"?<nav className="dialog-chapters" aria-label="Todos os capítulos">{chapters.filter((_,i)=>i!==1).map(chapter=>{const index=chapters.indexOf(chapter);return <a href={`#${chapter.id}`} key={chapter.id} aria-current={index===active?"step":undefined} onClick={event=>{event.preventDefault();navigate(index);}}><span>{chapter.letter}</span><span>{chapter.nav}</span>{index===active?<Check size={16}/>:<ArrowUpRight size={15}/>}</a>;})}</nav>:dialog==="privacy"?<p className="dialog-body">Ao enviar o formulário, você autoriza o uso do seu e-mail para receber os conteúdos da newsletter. Não pedimos dados financeiros ou informações de carteira. O som ambiente começa após sua primeira interação e pode ser desligado no controle Som.</p>:<button className="join-button" onClick={()=>navigate(newsletterChapter)}>Ir para a newsletter <ArrowRight size={17}/></button>}
+      {dialog==="menu"?<nav className="dialog-chapters" aria-label="Todos os capítulos">{chapters.map((chapter,index)=><a href={`#${chapter.id}`} key={chapter.id} aria-current={index===active?"step":undefined} onClick={event=>{event.preventDefault();navigate(index);}}><span>{chapter.letter}</span><span>{chapter.nav}</span>{index===active?<Check size={16}/>:<ArrowUpRight size={15}/>}</a>)}</nav>:dialog==="privacy"?<p className="dialog-body">Ao enviar o formulário, você autoriza o uso do seu e-mail para receber os conteúdos da newsletter. Não pedimos dados financeiros ou informações de carteira. O som ambiente começa após sua primeira interação e pode ser desligado no controle Som.</p>:<button className="join-button" onClick={()=>navigate(newsletterChapter)}>Ir para a newsletter <ArrowRight size={17}/></button>}
     </DialogContent></Dialog>
   </div>;
 }

@@ -9,14 +9,14 @@ const decode = encoded => Float32Array.from(new Int16Array(Uint8Array.from(atob(
 
 /**
  * @param {HTMLElement} host
- * @param {{signal: AbortSignal, getProgress: ()=>number, getMotion: ()=>boolean, onReady: ()=>void, onPulse: ()=>void, onError: ()=>void}} options
+ * @param {{signal: AbortSignal, getProgress: ()=>number, getMotion: ()=>boolean, onReady: ()=>void, onPulse: ()=>void, onError: ()=>void, preview?: boolean}} options
  */
 export async function createWorld(host, options) {
   const response=await fetch("/experience/cetaceans.json",{signal:options.signal});
   if(!response.ok)throw new Error("Cetacean asset unavailable");
   const model=await response.json();
   if(options.signal.aborted)return {dispose(){}};
-  const renderer=new THREE.WebGLRenderer({alpha:false,antialias:true,powerPreference:"high-performance"});
+  const renderer=new THREE.WebGLRenderer({alpha:false,antialias:true,powerPreference:"high-performance",preserveDrawingBuffer:!!options.preview});
   renderer.setClearColor(0x071b2e,1);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,window.innerWidth<900?1.5:1.8));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -160,6 +160,7 @@ export async function createWorld(host, options) {
     world.position.set(mobile?.02:blend("x"),mobile?blend("mobileY"):blend("y"),0);world.scale.setScalar(blend("scale"));
     const distance=mobile?Math.max(21.8,blend("framing")/(2*Math.tan(THREE.MathUtils.degToRad(16.5))*camera.aspect)):blend("distance");
     camera.position.set(Math.sin(angle)*.35+(motion?pointer.x*.2:0),2.6+Math.sin(angle)*.25-(motion?pointer.y*.2:0),distance-Math.sin(fraction*Math.PI)*.35);camera.lookAt(0,.85,0);
+    if(options.preview){world.position.set(0,0,0);camera.position.set(0,2.5,15);camera.lookAt(0,0,0);}
     for(const {material,blue,orca} of materialMap.values())material.color.lerpColors(blue,orca,orcaWeight);
     bursts=bursts.filter(b=>time-b.t<2.5);
     for(const p of pieces){
@@ -214,14 +215,14 @@ export async function createWorld(host, options) {
     renderer.render(scene,camera);
   }
   function animate(now){frame=0;if(disposed||document.hidden)return;const dt=Math.min((now-lastTime)/1000||.016,.05);lastTime=now;if(options.getMotion())time+=dt;draw();frame=requestAnimationFrame(animate);}
-  draw();options.onReady();frame=requestAnimationFrame(animate);
+  draw();options.onReady();if(!options.preview)frame=requestAnimationFrame(animate);
   function dispose(){
     if(disposed)return;disposed=true;if(frame)cancelAnimationFrame(frame);resizeObserver.disconnect();
     window.removeEventListener("pointermove",move);document.removeEventListener("pointerleave",leave);window.removeEventListener("pointerdown",pointerDown);window.removeEventListener("click",click);document.removeEventListener("visibilitychange",visibility);renderer.domElement.removeEventListener("webglcontextlost",contextLost);
     pieces.forEach(p=>p.mesh.geometry.dispose());for(const {material} of materialMap.values())material.dispose();
     lightRigs.forEach(r=>{r.coreMaterial.dispose();r.rayMaterial.dispose();});new Set(eyeRigs.map(r=>r.material)).forEach(m=>m.dispose());
     fibonacciGuideGeometry.dispose();fibonacciGuideMaterial.dispose();
-    eyeGeometry.dispose();rayGeometry.dispose();coreGeometry.dispose();dustGeometry.dispose();dustMaterial.dispose();environment.dispose();renderer.dispose();renderer.domElement.remove();
+    eyeGeometry.dispose();rayGeometry.dispose();coreGeometry.dispose();dustGeometry.dispose();dustMaterial.dispose();environment.dispose();renderer.dispose();if(options.preview)renderer.forceContextLoss();renderer.domElement.remove();
   }
-  options.signal.addEventListener("abort",dispose,{once:true});return {dispose};
+  options.signal.addEventListener("abort",dispose,{once:true});return {dispose,capture(){draw();return renderer.domElement.toDataURL("image/webp",.85);}};
 }
