@@ -9,6 +9,8 @@
 
 ## Economia de contexto e validação
 
+- Textos editáveis ficam em `conteudo/paginas/*.json`, `conteudo/pilares/*.json` e `conteudo/navegacao.json`. Preserve essa fonte única de conteúdo; consulte `conteudo/README.md` antes de alterar sua estrutura.
+
 - Respeite o escopo pedido pelo usuário. Não acrescente refatorações, pesquisas ou funcionalidades paralelas a uma mudança pequena.
 - Comece buscas em `app/`, `components/bitmood/`, `lib/bitmood/`, `db/`, `worker/` e `tests/`, restringindo-as aos arquivos relacionados à tarefa.
 - Não abra `public/experience/*.json`, `worker-configuration.d.ts`, `package-lock.json`, `legacy/` ou `vendor/` em tarefas comuns. Quando um desses artefatos for relevante, prefira tamanho, hash ou busca direcionada em vez de imprimir o conteúdo completo.

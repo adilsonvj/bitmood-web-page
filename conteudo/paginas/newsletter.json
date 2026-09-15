@@ -1,0 +1,17 @@
+{
+  "sobretitulo": "CONTINUE ACOMPANHANDO",
+  "titulo_linha_1": "A próxima leitura.",
+  "titulo_linha_2": "No seu e-mail.",
+  "descricao": "Receba as próximas análises do BITMOOD: dados, contexto e o raciocínio por trás de cada leitura.",
+  "formulario": {
+    "rotulo_email": "Seu e-mail",
+    "exemplo_email": "voce@exemplo.com",
+    "botao": "Quero receber",
+    "enviando": "Registrando",
+    "inscrito": "Inscrito",
+    "consentimento": "Ao se inscrever, você concorda em receber a newsletter BITMOOD. Seu e-mail será usado para esse envio.",
+    "sucesso": "Inscrição registrada. Você está na lista para receber as próximas edições.",
+    "erro": "Não foi possível registrar seu e-mail. Tente novamente.",
+    "erro_conexao": "Não conseguimos conectar. Confira sua conexão e tente novamente."
+  }
+}

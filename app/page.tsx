@@ -1,5 +1,9 @@
 "use client";
 
+import navigationCopy from "@/conteudo/navegacao.json";
+import inicioCopy from "@/conteudo/paginas/inicio.json";
+import canaisCopy from "@/conteudo/paginas/canais.json";
+import pilaresCopy from "@/conteudo/paginas/pilares.json";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight, Menu, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -12,7 +16,7 @@ import { chapters, channels, pillars } from "@/lib/bitmood/chapters";
 
 const channelsChapter=chapters.findIndex(chapter=>chapter.id==="canais");
 const newsletterChapter=chapters.findIndex(chapter=>chapter.id==="newsletter");
-const stationLabels=["Início","Pilares","Sobre mim","Canais","Newsletter"];
+const stationLabels=[navigationCopy.inicio,navigationCopy.pilares,navigationCopy.sobre,navigationCopy.canais,navigationCopy.newsletter];
 
 
 export default function Home({initialPillar}:{initialPillar?:number} = {}) {
@@ -105,10 +109,10 @@ export default function Home({initialPillar}:{initialPillar?:number} = {}) {
         <header className="scene-header">
           <a href="#inicio" className="wordmark" aria-label="BITMOOD — início" onClick={event=>{event.preventDefault();navigate(0);}}><img src="/brand/whale.svg" width="42" height="26" alt="" /><span>BITMOOD<span className="brand-dot">.</span></span></a>
           <nav className="header-navigation" aria-label="Navegação principal">
-            <a href="#perspectivas" onClick={event=>{event.preventDefault();navigate(1);}}>Perspectivas</a>
-            <a href="#sobre" onClick={event=>{event.preventDefault();navigate(2);}}>Sobre mim</a>
-            <a href="#canais" onClick={event=>{event.preventDefault();navigate(channelsChapter);}}>Canais</a>
-            <a href="#newsletter" onClick={event=>{event.preventDefault();navigate(newsletterChapter);}}>Newsletter <ArrowUpRight size={14}/></a>
+            <a href="#perspectivas" onClick={event=>{event.preventDefault();navigate(1);}}>{navigationCopy.pilares}</a>
+            <a href="#sobre" onClick={event=>{event.preventDefault();navigate(2);}}>{navigationCopy.sobre}</a>
+            <a href="#canais" onClick={event=>{event.preventDefault();navigate(channelsChapter);}}>{navigationCopy.canais}</a>
+            <a href="#newsletter" onClick={event=>{event.preventDefault();navigate(newsletterChapter);}}>{navigationCopy.newsletter} <ArrowUpRight size={14}/></a>
           </nav>
           <div className="header-controls">
             <button data-sound-toggle className={`sound-control ${soundPlaying?"is-on":""}`} onClick={toggleSound} aria-pressed={soundPlaying} aria-label={!soundAvailable?"Som indisponível":soundPlaying?"Desativar som ambiente":"Ativar som ambiente"} disabled={!soundAvailable}>
@@ -125,15 +129,15 @@ export default function Home({initialPillar}:{initialPillar?:number} = {}) {
 
         <div className="scene-copy-zone">
           {chapters.map((chapter,index)=>{
-            if(chapter.id==="perspectivas")return <section key={chapter.id} className={`scene-copy pillar-slide ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-perspectivas" aria-hidden={index!==active} inert={index!==active}><p className="scene-eyebrow">PILARES / {String(pillarIndex+1).padStart(2,"0")} DE 07</p><h2 tabIndex={-1} id="title-perspectivas">{pillars[pillarIndex].title[0]}<br/>{pillars[pillarIndex].title[1]}</h2><p className="scene-description">{pillars[pillarIndex].description}</p></section>;
+            if(chapter.id==="perspectivas")return <section key={chapter.id} className={`scene-copy pillar-slide ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-perspectivas" aria-hidden={index!==active} inert={index!==active}><p className="scene-eyebrow">{pilaresCopy.sobretitulo} / {String(pillarIndex+1).padStart(2,"0")} DE 07</p><h2 tabIndex={-1} id="title-perspectivas">{pillars[pillarIndex].title[0]}<br/>{pillars[pillarIndex].title[1]}</h2><p className="scene-description">{pillars[pillarIndex].description}</p></section>;
             if(chapter.id==="sobre") return <section key={chapter.id} className={`scene-copy about-scene ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-sobre" aria-hidden={index!==active} inert={index!==active}><AboutStory embedded /></section>;
             return <section key={chapter.id} className={`scene-copy ${index===active?"is-active":""} ${chapter.id==="newsletter"?"newsletter-copy":""}`} tabIndex={index===active?0:-1} aria-labelledby={`title-${chapter.id}`} aria-hidden={index!==active} inert={index!==active}>
               <p className="scene-eyebrow"><span>{chapter.eyebrow}</span></p>
               {index===0?<h1 tabIndex={-1} id={`title-${chapter.id}`}>{chapter.title[0]}<br/>{chapter.title[1]}</h1>:<h2 tabIndex={-1} id={`title-${chapter.id}`}>{chapter.title[0]}<br/>{chapter.title[1]}</h2>}
               <p className="scene-description">{chapter.description}</p>
 
-              {chapter.id==="canais"&&<div className="channels-list">{channels.filter((channel,index)=>channel.href||(!channels.some(item=>item.href)&&index===0)).map(channel=>channel.href?<a className="channel-action" href={channel.href} target="_blank" rel="noopener noreferrer" key={channel.label}><Play size={18}/><span>{channel.label}</span><ArrowUpRight size={18}/></a>:<button className="channel-action" key={channel.label} onClick={()=>{setLinkChoice(channel.label);setDialog("channels");}}><Play size={18}/><span>{channel.label}<small>Em breve</small></span><ArrowUpRight size={18}/></button>)}</div>}
-              {index===0&&<button className="join-button hero-action" onClick={()=>navigate(1)}>Conheça os pilares <ArrowRight size={17}/></button>}
+              {chapter.id==="canais"&&<div className="channels-list">{channels.filter((channel,index)=>channel.href||(!channels.some(item=>item.href)&&index===0)).map(channel=>channel.href?<a className="channel-action" href={channel.href} target="_blank" rel="noopener noreferrer" key={channel.label}><Play size={18}/><span>{channel.label}</span><ArrowUpRight size={18}/></a>:<button className="channel-action" key={channel.label} onClick={()=>{setLinkChoice(channel.label);setDialog("channels");}}><Play size={18}/><span>{channel.label}<small>{canaisCopy.em_breve}</small></span><ArrowUpRight size={18}/></button>)}</div>}
+              {index===0&&<button className="join-button hero-action" onClick={()=>navigate(1)}>{inicioCopy.botao} <ArrowRight size={17}/></button>}
               {chapter.id==="newsletter"&&<><Newsletter/><button className="privacy-link" onClick={()=>setDialog("privacy")}>Sobre seu cadastro <ArrowUpRight size={13}/></button></>}
             </section>;
           })}

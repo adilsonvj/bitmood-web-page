@@ -1,0 +1,52 @@
+{
+  "sobretitulo": "QUEM ESCREVE O BITMOOD",
+  "titulo_linha_1": "Olá! Sou",
+  "titulo_linha_2": "Adilson Vital.",
+  "descricao": "A história por trás do BITMOOD.",
+  "titulo_navegador": "Adilson Vital — Sobre o BITMOOD",
+  "descricao_busca": "A história de Adilson Vital, do cartão de Bitcoin guardado na gaveta à criação do BITMOOD: dados, método e transparência.",
+  "historia": [
+    "Em 2016, uma exchange chamada Foxbit foi até a minha universidade falar sobre Bitcoin e blockchain. Eu era aluno de engenharia de computação, achei aquilo besteira e mal prestei atenção. No fim da palestra, eles sortearam dez cartões com uma fração de bitcoin dentro. Eu ganhei um.",
+    "Olhei o cartão, vi um QR code que eu não fazia ideia para que servia, e guardei na gaveta.",
+    "Alguns meses depois, um amigo me ofereceu um bom dinheiro por aquele cartão. Desconfiado, fui pesquisar quanto aquilo valia — e descobri que tinha uma quantia nada desprezível parada numa gaveta da minha casa. Só que o cartão tinha prazo de resgate. E o prazo já tinha vencido.",
+    "Perdi. E o mais incômodo é que não perdi por causa do preço, nem por ter vendido na hora errada. Perdi porque não sabia o que eu tinha em mãos.",
+    "Foi ali que começou tudo. De 2016 para cá, estudei esse universo obsessivamente. Ganhei dinheiro, perdi dinheiro, acertei por sorte e errei com convicção. E, em quase dez anos, nunca encontrei o que eu mais queria: um método honesto que me dissesse quando comprar e quando parar."
+  ],
+  "metodo": [
+    "Sou Cristão, saí do interior de São Paulo e hoje moro em Luxemburgo com minha linda esposa, Andressa. Trabalho há cinco anos com dados na Amazon, sou engenheiro de computação e doutor em Ciências de Computação, os dois pela USP. Minha pesquisa é em inteligência artificial e redes complexas — a área que estuda como um comportamento coletivo emerge de milhões de decisões individuais. Levei tempo demais para perceber que eu tinha passado anos estudando, em teoria, exatamente aquilo que o Bitcoin é na prática.",
+    "O BITMOOD é a tentativa de construir o método que eu nunca achei.",
+    "Na prática, é análise das notícias que movem o mercado — só que feita do jeito que fui treinado a fazer: olhando o dado antes da manchete, separando sinal de barulho, e mostrando o raciocínio inteiro em vez do veredito.",
+    "Toda vez que o Bitcoin se move, aparecem dez explicações. O trabalho aqui é testar quais delas param de pé: quais dados sustentam aquilo, o que esses dados não conseguem dizer, e onde a análise pode estar errada. Nada de grito, preço-alvo ou \"última chance de comprar\". Quando a resposta for \"não dá para saber\", vai estar escrito assim, não forjo hipóteses.",
+    "Certeza ninguém tem sobre Bitcoin. O que existe aqui é método, transparência e uma obsessão em mostrar a conta — o suficiente para você formar a sua própria opinião em vez de adotar a minha."
+  ],
+  "citacao_satoshi": {
+    "texto": "“Moedas perdidas apenas fazem com que as moedas de todos os outros valham um pouco mais.”",
+    "autor": "Satoshi Nakamoto — fórum Bitcointalk, 21 de junho de 2010"
+  },
+  "citacao_newton": {
+    "texto": "“Hypotheses non fingo” — não forjo hipóteses.",
+    "autor": "Isaac Newton",
+    "obra": "Principia",
+    "referencia": "Escólio Geral, 1713"
+  },
+  "fotos": [
+    {
+      "titulo": "01 / BIXO NA USP",
+      "legenda": "Aos 19 anos, entrando na Engenharia de Computação da USP em 2016 — o mesmo ano da palestra da Foxbit."
+    },
+    {
+      "titulo": "02 / O CARTÃO",
+      "legenda": "O cartão da palestra de 2016."
+    },
+    {
+      "titulo": "03 / O VERSO",
+      "legenda": "O verso do mesmo cartão, com os dados de acesso ocultos."
+    },
+    {
+      "titulo": "04 / FORA DOS DADOS",
+      "legenda": "Com Andressa no meu aniversário de 30 anos no Natural History Museum em Londres :)"
+    }
+  ],
+  "conclusao": "Se isso faz sentido pra você, a próxima leitura chega no seu e-mail.",
+  "botao": "Receber a newsletter"
+}

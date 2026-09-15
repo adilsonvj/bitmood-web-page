@@ -1,3 +1,4 @@
+import copy from "@/conteudo/paginas/sobre.json";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
@@ -5,8 +6,8 @@ import { AboutStory } from "@/components/bitmood/about-story";
 import styles from "./sobre.module.css";
 
 export const metadata: Metadata = {
-  title: "Adilson Vital — Sobre o BITMOOD",
-  description: "A história de Adilson Vital, do cartão de Bitcoin guardado na gaveta à criação do BITMOOD: dados, método e transparência.",
+  title: copy.titulo_navegador,
+  description: copy.descricao_busca,
 };
 
 export default function About() {
@@ -17,6 +18,6 @@ export default function About() {
       <nav aria-label="Navegação principal"><Link className={styles.back} href="/"><ArrowLeft size={16} /> Voltar ao universo BITMOOD</Link></nav>
     </header>
     <main id="historia"><AboutStory /></main>
-    <footer className={styles.footer}><span>BITMOOD / BITCOIN INTELLIGENCE</span><p>Projeto independente, sem vínculo ou endosso da Amazon.</p><Link href="/#newsletter">Receber a newsletter <ArrowUpRight size={15} /></Link></footer>
+    <footer className={styles.footer}><span>BITMOOD / BITCOIN INTELLIGENCE</span><p>Projeto independente, sem vínculo ou endosso da Amazon.</p><Link href="/#newsletter">{copy.botao} <ArrowUpRight size={15} /></Link></footer>
   </div>;
 }

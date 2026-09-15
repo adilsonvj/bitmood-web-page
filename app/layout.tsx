@@ -1,8 +1,9 @@
+import copy from "@/conteudo/paginas/inicio.json";
 import type { Metadata } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "BITMOOD — Bitcoin Intelligence",
-  description: "Veja além do preço. Explore as sete perspectivas do BITMOOD e conecte dados, comportamento e contexto para compreender o Bitcoin.",
+  title: copy.titulo_navegador,
+  description: copy.descricao_busca,
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
