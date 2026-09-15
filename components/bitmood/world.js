@@ -80,7 +80,9 @@ export async function createWorld(host, options) {
   const lightRigs=[],eyeRigs=[],eyeGeometry=new THREE.IcosahedronGeometry(.060,1);
   const rayGeometry=new THREE.CylinderGeometry(.48,.018,3.8,16,1,true);rayGeometry.translate(0,1.9,0);
   const coreGeometry=new THREE.IcosahedronGeometry(.12,1);
-  for(const [kind,animals] of [[0,model.animals],[2,model.orcas]])for(const animal of animals){
+  // One shared moving light rig serves all non-animal sculptures.
+  const sculptureLight={scale:1,phase:.7,center:[0,0,0],eyes:[]};
+  for(const [kind,animals] of [[0,model.animals],[2,model.orcas],[3,[sculptureLight]]])for(const animal of animals){
     const group=new THREE.Group();world.add(group);
     const point=new THREE.PointLight(0x8bc9f4,0,6*animal.scale,2);group.add(point);
     const coreMaterial=new THREE.MeshBasicMaterial({color:0xd8efff,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending});
@@ -93,6 +95,7 @@ export async function createWorld(host, options) {
     const rays=[];
     for(let i=0;i<5;i++){const ray=new THREE.Mesh(rayGeometry,rayMaterial);ray.scale.setScalar(animal.scale);group.add(ray);rays.push(ray);}
     lightRigs.push({kind,animal,group,point,coreMaterial,rayMaterial,rays});
+    if(!animal.eyes.length)continue;
     const material=new THREE.MeshPhysicalMaterial({color:0x030d17,metalness:.2,roughness:.2,transparent:true});
     for(const pos of animal.eyes){const eye=new THREE.Mesh(eyeGeometry,material);eye.scale.set(animal.scale,animal.scale*.7,animal.scale*.45);world.add(eye);eyeRigs.push({kind,animal,eye,base:V(...pos),material});}
   }
@@ -163,7 +166,7 @@ export async function createWorld(host, options) {
     // Pillars use a compact, separate mobile art panel rather than the full screen.
     // Fit both axes instead of retaining the old full-screen minimum distance.
     if(mobile && height < window.innerHeight*.6 && segment>=2 && segment<=8){
-      const framing=blend("framing");
+      const framing=blend("framing")*.9;
       const panelDistance=Math.max(framing/camera.aspect,5.8)/(2*Math.tan(THREE.MathUtils.degToRad(16.5)));
       world.position.set(0,0,0);camera.position.set(0,1.5,panelDistance);camera.lookAt(0,0,0);
     }
@@ -188,8 +191,8 @@ export async function createWorld(host, options) {
         else {workingP.y+=arc*.35;}
       }
       if(motion){
-        const idle=.014+(1-whaleWeight)*.019;
-        workingP.x+=Math.sin(time*p.rate+p.phase)*idle;workingP.y+=Math.cos(time*p.rate*.7+p.phase)*idle*1.25;workingP.z+=Math.sin(time*p.rate*.8+p.phase)*idle;
+        const idle=.014+(1-whaleWeight)*.070,tempo=time*p.rate*(1+1.1*(1-whaleWeight));
+        workingP.x+=Math.sin(tempo+p.phase)*idle;workingP.y+=Math.cos(tempo*.7+p.phase)*idle*1.25;workingP.z+=Math.sin(tempo*.8+p.phase)*idle;
         const leverWeight=segment===7?t:segment===8?1-t:0;
         if(leverWeight>0&&['lever','weight'].includes(p.targets[8].part)){
           const a=Math.sin(time*.38)*.020*leverWeight,x=workingP.x-1,y=workingP.y-.30;
@@ -200,13 +203,14 @@ export async function createWorld(host, options) {
       p.mesh.position.copy(workingP);p.mesh.quaternion.copy(workingQ);p.mesh.scale.setScalar(THREE.MathUtils.lerp(from.s,to.s,t));
       p.mesh.morphTargetInfluences[0]=segment===2?1-t:nextIndex===2?t:0;
       p.mesh.morphTargetInfluences[1]=(['block','inscription','weight'].includes(from.part)?1-t:0)+(['block','inscription','weight'].includes(to.part)?t:0);
-      if(motion){const small=Math.sin(time*p.rate*.5+p.phase)*.011*(1-p.mesh.morphTargetInfluences[1]*.8);p.mesh.rotateX(small);p.mesh.rotateY(small*.75);}
+      if(motion){const small=Math.sin(time*p.rate+p.phase)*(.011+(1-whaleWeight)*.042)*(1-p.mesh.morphTargetInfluences[1]*.65);p.mesh.rotateX(small);p.mesh.rotateY(small*.75);}
     }
     for(const rig of lightRigs){
-      const a=rig.animal,w=rig.kind===0?whaleWeight:orcaWeight;
+      const a=rig.animal,w=rig.kind===0?whaleWeight:rig.kind===2?orcaWeight:Math.max(0,1-whaleWeight-orcaWeight-weight(1));
       rig.group.visible=w>.002;
       const phase=time*.82+a.phase;
       rig.group.position.set(a.center[0]+(-1.2+Math.sin(time*.48+a.phase)*1.25)*a.scale+Math.sin(time*.19+a.phase)*.22*a.scale,a.center[1]+(.14*Math.sin(phase*.56)+.16*Math.cos(time*.5+a.phase))*a.scale,a.center[2]+Math.sin(time*.39+a.phase)*.3*a.scale);
+      if(rig.kind===3)rig.group.position.set(Math.sin(time*.55)*2.3,Math.sin(time*.42+.6)*1.6,.25+Math.cos(time*.38)*.55);
       rig.point.intensity=w*(9+Math.sin(time*.56+a.phase)*2)*a.scale*a.scale;rig.coreMaterial.opacity=w*.60;rig.rayMaterial.uniforms.strength.value=w*.12;
       for(let i=0;i<rig.rays.length;i++){
         const a0=i/rig.rays.length*Math.PI*2+time*.18+a.phase;

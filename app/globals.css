@@ -39,7 +39,8 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
 .axis-stations button[aria-current] { color:var(--foreground); border-color:var(--primary); }
 .axis-journey .vertical-rail a { font-size:21px; font-weight:700; border:1px solid #A8C4DC40; border-radius:6px; }
 .axis-journey .vertical-rail a[aria-current] { background:#24425f; border-color:var(--primary); }
-.axis-journey .vertical-rail { display:flex; flex-direction:column; left:12px; right:auto; top:50%; bottom:auto; transform:translateY(-50%); max-height:calc(100svh - 190px); overflow-y:auto; gap:4px; }
+.axis-journey .vertical-rail { display:flex; flex-direction:column; left:12px; right:auto; top:50%; bottom:auto; transform:translateY(-50%); max-height:calc(100svh - 190px); overflow-y:auto; overflow-x:hidden; scrollbar-width:none; gap:4px; }
+.axis-journey .vertical-rail::-webkit-scrollbar { display:none; width:0; height:0; }
 .axis-journey .vertical-rail :is(a,.pillar-rail-arrow) { flex-shrink:0; width:44px; min-width:44px; height:44px; }
 .pillar-rail-arrow { color:var(--silver); font-size:25px; background:transparent; border:0; }
 @media(max-width:899px) {
@@ -47,9 +48,9 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
   .axis-journey .axis-stations { order:3; width:100%; justify-content:space-between; gap:6px; }
   .axis-stations button { font-size:11px; }
   .axis-journey .vertical-rail { left:6px; top:calc(50% - 15px); }
-  .axis-journey .scene-copy.pillar-slide { top:39svh; bottom:110px; left:64px; right:16px; width:auto; max-width:none; max-height:none; margin:0; padding:0; }
+  .axis-journey .scene-copy.pillar-slide { top:50svh; bottom:110px; left:64px; right:16px; width:auto; max-width:none; max-height:none; margin:0; padding:0; }
   .axis-journey .pillar-slide h2 { font-size:clamp(25px,4vw,36px); }
-  .axis-journey[data-scene="perspectivas"] .world-canvas { top:65px; bottom:62svh; left:54px; touch-action:pinch-zoom; }
+  .axis-journey[data-scene="perspectivas"] .world-canvas { top:78px; bottom:51svh; left:54px; touch-action:pinch-zoom; }
   .axis-journey .pillar-slide .scene-description { max-width:none; font-size:16px; line-height:1.5; }
   .axis-journey .scene-copy.about-scene { bottom:112px; }
 }
