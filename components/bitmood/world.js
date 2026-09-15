@@ -160,6 +160,13 @@ export async function createWorld(host, options) {
     world.position.set(mobile?.02:blend("x"),mobile?blend("mobileY"):blend("y"),0);world.scale.setScalar(blend("scale"));
     const distance=mobile?Math.max(21.8,blend("framing")/(2*Math.tan(THREE.MathUtils.degToRad(16.5))*camera.aspect)):blend("distance");
     camera.position.set(Math.sin(angle)*.35+(motion?pointer.x*.2:0),2.6+Math.sin(angle)*.25-(motion?pointer.y*.2:0),distance-Math.sin(fraction*Math.PI)*.35);camera.lookAt(0,.85,0);
+    // Pillars use a compact, separate mobile art panel rather than the full screen.
+    // Fit both axes instead of retaining the old full-screen minimum distance.
+    if(mobile && height < window.innerHeight*.6 && segment>=2 && segment<=8){
+      const framing=blend("framing");
+      const panelDistance=Math.max(framing/camera.aspect,5.8)/(2*Math.tan(THREE.MathUtils.degToRad(16.5)));
+      world.position.set(0,0,0);camera.position.set(0,1.5,panelDistance);camera.lookAt(0,0,0);
+    }
     if(options.preview){world.position.set(0,0,0);camera.position.set(0,2.5,15);camera.lookAt(0,0,0);}
     for(const {material,blue,orca} of materialMap.values())material.color.lerpColors(blue,orca,orcaWeight);
     bursts=bursts.filter(b=>time-b.t<2.5);

@@ -47,9 +47,10 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
   .axis-journey .axis-stations { order:3; width:100%; justify-content:space-between; gap:6px; }
   .axis-stations button { font-size:11px; }
   .axis-journey .vertical-rail { display:flex; bottom:112px; justify-content:center; }
-  .axis-journey .scene-copy.pillar-slide { top:48svh; bottom:165px; max-height:none; padding-top:0; }
+  .axis-journey .scene-copy.pillar-slide { top:39svh; bottom:155px; left:20px; right:20px; width:auto; max-width:none; max-height:none; margin:0; padding:0; }
   .axis-journey .pillar-slide h2 { font-size:clamp(25px,4vw,36px); }
-  .axis-journey[data-scene="perspectivas"] .world-canvas { top:60px; bottom:52svh; }
+  .axis-journey[data-scene="perspectivas"] .world-canvas { top:65px; bottom:62svh; touch-action:pinch-zoom; }
+  .axis-journey .pillar-slide .scene-description { max-width:none; font-size:16px; line-height:1.5; }
   .axis-journey .pillar-axis-controls { margin-top:8px; gap:8px; }
   .axis-journey .pillar-axis-controls span { display:none; }
   .axis-journey .scene-copy.about-scene { bottom:112px; }

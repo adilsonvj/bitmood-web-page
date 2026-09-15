@@ -12,7 +12,7 @@ import { chapters, channels, pillars } from "@/lib/bitmood/chapters";
 
 const channelsChapter=chapters.findIndex(chapter=>chapter.id==="canais");
 const newsletterChapter=chapters.findIndex(chapter=>chapter.id==="newsletter");
-const stationLabels=["Hero","Pilares","Sobre mim","Canais","Newsletter"];
+const stationLabels=["Início","Pilares","Sobre mim","Canais","Newsletter"];
 
 
 export default function Home({initialPillar}:{initialPillar?:number} = {}) {
@@ -92,7 +92,7 @@ export default function Home({initialPillar}:{initialPillar?:number} = {}) {
 
   return <div ref={rootRef} className={`bitmood axis-journey ${ready?"is-ready":"is-loading"} ${graphicsFailed?"graphics-fallback":""} ${motionPaused?"motion-paused":""}`} data-scene={current.id}>
     <a className="skip-link" href="#perspectivas" onClick={event=>{event.preventDefault();navigate(1);}}>Ir para as perspectivas</a>
-    <p id="navigation-help" className="sr-only">Esquerda e direita percorrem Hero, Pilares, Sobre mim, Canais e Newsletter em ciclo. Dentro de Pilares, cima e baixo trocam entre os sete pilares. Home vai ao início e End à newsletter. Textos longos rolam verticalmente; as setas laterais continuam disponíveis. Tab percorre os controles.</p>
+    <p id="navigation-help" className="sr-only">Esquerda e direita percorrem Início, Pilares, Sobre mim, Canais e Newsletter em ciclo. Dentro de Pilares, cima e baixo trocam entre os sete pilares. Home vai ao início e End à newsletter. Textos longos rolam verticalmente; as setas laterais continuam disponíveis. Tab percorre os controles.</p>
     <p className="sr-only" aria-live="polite" aria-atomic="true">Seção {active+1} de {chapters.length}: {current.nav}.{active===1?` Pilar ${pillarIndex+1} de 7: ${pillars[pillarIndex].nav}.`:""}</p>
     <main ref={trackRef} className="journey" aria-label="O universo BITMOOD" aria-describedby="navigation-help">
       <div className="experience-stage" ref={stageRef}>
