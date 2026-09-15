@@ -31,6 +31,35 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid 
 h1, h2, h3, p { margin: 0; } em { font-style: normal; color: var(--primary); }
 html { scroll-behavior: auto; scroll-padding-top: 0; }
 .bitmood { --copy-opacity: 1; --copy-offset: 0px; --journey-progress: 0%; background: #071B2E; }
+/* Two independent axes, one fixed viewport; only long copy scrolls natively. */
+.axis-journey .journey { overflow:hidden; scroll-snap-type:none; overscroll-behavior:none; }
+.axis-journey .experience-stage { position:absolute; inset:0; margin:0; }
+.axis-journey .axis-stations { display:flex; gap:clamp(8px,2vw,26px); align-items:center; }
+.axis-stations button { color:var(--muted-foreground); min-height:44px; font-size:13px; border-bottom:2px solid transparent; }
+.axis-stations button[aria-current] { color:var(--foreground); border-color:var(--primary); }
+.axis-journey .vertical-rail a { font-size:21px; font-weight:700; border:1px solid #A8C4DC40; border-radius:6px; }
+.axis-journey .vertical-rail a[aria-current] { background:#24425f; border-color:var(--primary); }
+.pillar-axis-controls { display:flex; align-items:center; gap:12px; margin-top:22px; font-size:13px; flex-wrap:wrap; }
+.pillar-axis-controls button { min-height:44px; padding:8px 12px; border:1px solid #A8C4DC70; border-radius:4px; }
+.pillar-axis-controls span { color:var(--muted-foreground); }
+@media(max-width:899px) {
+  .axis-journey .scene-footer { flex-wrap:wrap; bottom:14px; }
+  .axis-journey .axis-stations { order:3; width:100%; justify-content:space-between; gap:6px; }
+  .axis-stations button { font-size:11px; }
+  .axis-journey .vertical-rail { display:flex; bottom:112px; justify-content:center; }
+  .axis-journey .scene-copy.pillar-slide { top:48svh; bottom:165px; max-height:none; padding-top:0; }
+  .axis-journey .pillar-slide h2 { font-size:clamp(25px,4vw,36px); }
+  .axis-journey[data-scene="perspectivas"] .world-canvas { top:60px; bottom:52svh; }
+  .axis-journey .pillar-axis-controls { margin-top:8px; gap:8px; }
+  .axis-journey .pillar-axis-controls span { display:none; }
+  .axis-journey .scene-copy.about-scene { bottom:112px; }
+}
+@media(max-height:550px) and (min-width:700px) {
+  .axis-journey .scene-copy.pillar-slide { top:75px; bottom:105px; width:43%; max-height:none; }
+  .axis-journey[data-scene="perspectivas"] .world-canvas { inset:0; }
+  .axis-journey .vertical-rail { top:75px; bottom:100px; left:auto; right:12px; flex-direction:column; overflow-y:auto; }
+  .axis-journey .vertical-rail a { flex-shrink:0; }
+}
 .journey { position: fixed; inset: 0; height: 100svh; overflow-y: auto; overflow-x: hidden; scroll-snap-type: y mandatory; overscroll-behavior-y: contain; scrollbar-width: none; }
 .journey::-webkit-scrollbar { display: none; }
 .journey.is-repositioning { scroll-snap-type: none; }
@@ -244,7 +273,7 @@ html { scroll-behavior: auto; scroll-padding-top: 0; }
 .pillar-card p { font-size:13px; line-height:1.45; color:var(--silver); }
 .pillar-open { display:block; margin-top:8px; }
 @media(min-width:1001px) { .pillar-art { height:clamp(100px,14vh,150px); }.pillar-open { display:none; } }
-.bitmood:is([data-scene="perspectivas"],[data-scene="sobre"]) .world-canvas { visibility:hidden; }
+.bitmood[data-scene="sobre"] .world-canvas { visibility:hidden; }
 .pillar-render-host { position:fixed; left:-10000px; top:0; width:480px; height:280px; pointer-events:none; }
 .bitmood[data-scene="perspectivas"] :is(.sculpture-caption,.side-caption,.scene-bracket) { visibility:hidden; }
 .bitmood[data-scene="sobre"] .about-scene { left:65px; width:calc(100% - 65px); }

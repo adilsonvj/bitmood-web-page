@@ -1,32 +1,33 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight, Menu, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight, Menu, Pause, Play, Volume2, VolumeX, X } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Newsletter } from "@/components/bitmood/newsletter";
 import { AboutStory } from "@/components/bitmood/about-story";
-import { PillarIndex } from "@/components/bitmood/pillar-index";
-import { PillarNav } from "@/components/bitmood/pillar-nav";
-import { worldProgress } from "@/lib/bitmood/world-progress.js";
 import { useOceanSound } from "@/components/bitmood/audio";
-import { createJourney, wrapScene } from "@/lib/bitmood/navigation.js";
-import { chapters, channels } from "@/lib/bitmood/chapters";
+import { wrapScene } from "@/lib/bitmood/navigation.js";
+import { createAxisJourney } from "@/lib/bitmood/axis-navigation.js";
+import { chapters, channels, pillars } from "@/lib/bitmood/chapters";
 
-const lastChapter=chapters.length-1;
 const channelsChapter=chapters.findIndex(chapter=>chapter.id==="canais");
 const newsletterChapter=chapters.findIndex(chapter=>chapter.id==="newsletter");
+const stationLabels=["Hero","Pilares","Sobre mim","Canais","Newsletter"];
 
 
-export default function Home() {
+export default function Home({initialPillar}:{initialPillar?:number} = {}) {
   const rootRef=useRef<HTMLDivElement>(null);
   const trackRef=useRef<HTMLElement>(null);
   const stageRef=useRef<HTMLDivElement>(null);
   const worldRef=useRef<HTMLDivElement>(null);
   const progressRef=useRef(0);
-  const journeyRef=useRef<ReturnType<typeof createJourney>|null>(null);
+  const journeyRef=useRef<ReturnType<typeof createAxisJourney>|null>(null);
+  const pillarRef=useRef(initialPillar ?? 0);
+  const sceneRef=useRef(0);
+  const [pillarIndex,setPillarIndex]=useState(initialPillar ?? 0);
   const dialogRef=useRef(false);
   const motionRef=useRef(true);
-  const [active,setActive]=useState(0);
+  const [active,setActive]=useState(initialPillar===undefined?0:1);
   const [ready,setReady]=useState(false);
   const [graphicsFailed,setGraphicsFailed]=useState(false);
   const [staticGraphics,setStaticGraphics]=useState(false);
@@ -48,12 +49,13 @@ export default function Home() {
   useEffect(()=>{
     const root=rootRef.current,track=trackRef.current,stage=stageRef.current;
     if(!root||!track||!stage)return;
-    const journey=createJourney({root,track,stage,count:chapters.length,progress:progressRef,getMotion:()=>motionRef.current,isBlocked:()=>dialogRef.current,onScene:(index:number)=>{setActive(index);playRef.current("transition",index);}});
+    const journey=createAxisJourney({root,track,count:chapters.length,pillarCount:pillars.length,isBlocked:()=>dialogRef.current,onScene:(index:number)=>{sceneRef.current=index;progressRef.current=index===1?pillars[pillarRef.current].worldIndex:([0,2,1,9,0][index]);setActive(index);playRef.current("transition",index);},onPillar:(index:number)=>{pillarRef.current=index;setPillarIndex(index);if(sceneRef.current===1)progressRef.current=pillars[index].worldIndex;playRef.current("transition",index+2);}});
     journeyRef.current=journey;
-    const hash=()=>{const id=window.location.hash.slice(1);const index=chapters.findIndex(chapter=>chapter.id===id);if(index>=0)journey.go(index);};
+    if(initialPillar!==undefined){journey.selectPillar(initialPillar);journey.go(1);}
+    const hash=()=>{const id=window.location.hash.slice(1);const selected=pillars.findIndex(pillar=>pillar.route===id);if(selected>=0){journey.selectPillar(selected);journey.go(1);return;}const index=chapters.findIndex(chapter=>chapter.id===id);if(index>=0)journey.go(index);};
     hash();window.addEventListener("hashchange",hash);
     return()=>{journey.dispose();journeyRef.current=null;window.removeEventListener("hashchange",hash);};
-  },[]);
+  },[initialPillar]);
 
   useEffect(()=>{
     const host=worldRef.current;if(!host)return;
@@ -66,7 +68,7 @@ export default function Home() {
         void import("@/components/bitmood/world.js").then(({createWorld})=>{
           if(abort.signal.aborted)return {dispose(){}};
           return createWorld(host,{
-      signal:abort.signal,getProgress:()=>worldProgress(progressRef.current),getMotion:()=>motionRef.current,
+      signal:abort.signal,getProgress:()=>progressRef.current,getMotion:()=>motionRef.current,
       onReady:()=>{if(!abort.signal.aborted)setReady(true);},
       onPulse:()=>playRef.current("whale"),
       onError:()=>{if(!abort.signal.aborted)setGraphicsFailed(true);},
@@ -86,11 +88,12 @@ export default function Home() {
   },[]);
   function toggleMotion(){motionRef.current=!motionRef.current;setMotionPaused(!motionRef.current);}
   const current=chapters[active];
+  useEffect(()=>{window.history.replaceState(null,"",`#${active===1?pillars[pillarIndex].route:chapters[active].id}`);},[active,pillarIndex]);
 
-  return <div ref={rootRef} className={`bitmood ${ready?"is-ready":"is-loading"} ${graphicsFailed?"graphics-fallback":""} ${motionPaused?"motion-paused":""}`} data-scene={current.id}>
+  return <div ref={rootRef} className={`bitmood axis-journey ${ready?"is-ready":"is-loading"} ${graphicsFailed?"graphics-fallback":""} ${motionPaused?"motion-paused":""}`} data-scene={current.id}>
     <a className="skip-link" href="#perspectivas" onClick={event=>{event.preventDefault();navigate(1);}}>Ir para as perspectivas</a>
-    <p id="navigation-help" className="sr-only">Use as setas para mudar de cena, Home para o início e End para a newsletter. O percurso se repete. Tab e Shift mais Tab percorrem os controles e o conteúdo. Quando um texto não couber, as setas para cima e para baixo rolam o texto; as setas laterais continuam mudando de cena.</p>
-    <p className="sr-only" aria-live="polite" aria-atomic="true">Seção {active+1} de {chapters.length}: {current.nav}.</p>
+    <p id="navigation-help" className="sr-only">Esquerda e direita percorrem Hero, Pilares, Sobre mim, Canais e Newsletter em ciclo. Dentro de Pilares, cima e baixo trocam entre os sete pilares. Home vai ao início e End à newsletter. Textos longos rolam verticalmente; as setas laterais continuam disponíveis. Tab percorre os controles.</p>
+    <p className="sr-only" aria-live="polite" aria-atomic="true">Seção {active+1} de {chapters.length}: {current.nav}.{active===1?` Pilar ${pillarIndex+1} de 7: ${pillars[pillarIndex].nav}.`:""}</p>
     <main ref={trackRef} className="journey" aria-label="O universo BITMOOD" aria-describedby="navigation-help">
       <div className="experience-stage" ref={stageRef}>
         <div ref={worldRef} className="world-canvas" aria-hidden="true" />
@@ -118,11 +121,11 @@ export default function Home() {
 
         {!ready&&!graphicsFailed&&<div className="world-loading" role="status"><span>Formando as baleias</span><i/><small>BITMOOD / EXPLORE</small></div>}
 
-        <PillarNav />
+        {active===1&&<nav className="vertical-rail" aria-label="Escolher pilar">{pillars.map((pillar,index)=><a href={`#${pillar.route}`} key={pillar.id} aria-label={pillar.nav} aria-current={pillarIndex===index?"step":undefined} onClick={event=>{event.preventDefault();journeyRef.current?.selectPillar(index);window.history.replaceState(null,"",`#${pillar.route}`);}}><span>{pillar.letter}</span><span className="rail-title">{pillar.nav}</span></a>)}</nav>}
 
         <div className="scene-copy-zone">
           {chapters.map((chapter,index)=>{
-            if(chapter.id==="perspectivas")return <section key={chapter.id} className={`scene-copy pillar-index ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-perspectivas" aria-hidden={index!==active} inert={index!==active}><p className="scene-eyebrow">UMA METODOLOGIA. SETE PERSPECTIVAS.</p><h2 tabIndex={-1} id="title-perspectivas">Sete pilares. Uma leitura conectada.</h2><PillarIndex active={index===active} /></section>;
+            if(chapter.id==="perspectivas")return <section key={chapter.id} className={`scene-copy pillar-slide ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-perspectivas" aria-hidden={index!==active} inert={index!==active}><p className="scene-eyebrow">PILARES / {String(pillarIndex+1).padStart(2,"0")} DE 07</p><h2 tabIndex={-1} id="title-perspectivas">{pillars[pillarIndex].title[0]}<br/>{pillars[pillarIndex].title[1]}</h2><p className="scene-description">{pillars[pillarIndex].description}</p><div className="pillar-axis-controls"><button onClick={()=>journeyRef.current?.selectPillar(pillarIndex-1)} aria-label="Pilar anterior">↑ Anterior</button><span>Role para trocar o pilar</span><button onClick={()=>journeyRef.current?.selectPillar(pillarIndex+1)} aria-label="Próximo pilar">Próximo ↓</button></div></section>;
             if(chapter.id==="sobre") return <section key={chapter.id} className={`scene-copy about-scene ${index===active?"is-active":""}`} tabIndex={index===active?0:-1} aria-labelledby="title-sobre" aria-hidden={index!==active} inert={index!==active}><AboutStory embedded /></section>;
             return <section key={chapter.id} className={`scene-copy ${index===active?"is-active":""} ${chapter.id==="newsletter"?"newsletter-copy":""}`} tabIndex={index===active?0:-1} aria-labelledby={`title-${chapter.id}`} aria-hidden={index!==active} inert={index!==active}>
               <p className="scene-eyebrow"><span>{chapter.eyebrow}</span></p>
@@ -136,15 +139,14 @@ export default function Home() {
           })}
         </div>
 
-        <div className="sculpture-caption" aria-hidden="true"><i/><span>{current.sculpture}</span></div>
+        <div className="sculpture-caption" aria-hidden="true"><i/><span>{active===1?pillars[pillarIndex].sculpture:current.sculpture}</span></div>
         <footer className="scene-footer">
-          <button className="scroll-prompt" onClick={()=>navigate(active===lastChapter?0:active+1)}>{active===lastChapter?<><span>Voltar ao início</span><ArrowUpRight size={16}/></>:<><ArrowDown size={16}/><span>Role para explorar</span></>}</button>
-          <span className="footer-signature">BITCOIN INTELLIGENCE</span>
-          <div className="chapter-controls"><button className="icon-control" aria-label="Capítulo anterior" onClick={()=>navigate(active-1)}><ChevronLeft size={19}/></button><span><span className="sr-only">Capítulo </span>{String(active+1).padStart(2,"0")}<span className="chapter-total"> / {chapters.length}</span></span><button className="icon-control" aria-label="Próximo capítulo" onClick={()=>navigate(active+1)}><ChevronRight size={19}/></button></div>
+          <button className="scroll-prompt" onClick={()=>navigate(active-1)}><ChevronLeft size={16}/><span>{stationLabels[wrapScene(active-1,5)]}</span></button>
+          <nav className="axis-stations" aria-label="Jornada horizontal">{chapters.map((chapter,index)=><button key={chapter.id} aria-current={active===index?"step":undefined} onClick={()=>navigate(index)}>{stationLabels[index]}</button>)}</nav>
+          <button className="scroll-prompt" onClick={()=>navigate(active+1)}><span>{stationLabels[wrapScene(active+1,5)]}</span><ChevronRight size={19}/></button>
         </footer>
         <div className="journey-line" aria-hidden="true"><i/></div>
       </div>
-      {[0,1,2].flatMap(cycle=>chapters.map((chapter,index)=><div key={`${cycle}-${chapter.id}`} id={cycle===1?chapter.id:undefined} data-snap-index={cycle*chapters.length+index} className="scroll-anchor" aria-hidden="true" />))}
     </main>
 
     <Dialog open={dialog!==null} onOpenChange={open=>{if(!open)setDialog(null);}}><DialogContent className={`bitmood-dialog ${dialog==="menu"?"navigation-dialog":""}`} showCloseButton={false}>
