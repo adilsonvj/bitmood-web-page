@@ -11,6 +11,8 @@ test('editable page content preserves the fields required by the layout', () => 
     for (const key of ['sobretitulo','titulo_linha_1','titulo_linha_2','descricao']) assert.equal(typeof page[key], 'string');
   }
   const about = read('paginas/sobre.json');
+  assert.equal(typeof about.epigrafe.texto, 'string');
+  assert.equal(typeof about.epigrafe.atribuicao, 'string');
   assert.equal(about.historia.length, 5);
   assert.equal(about.metodo.length, 5);
   assert.equal(about.fotos.length, 4);
