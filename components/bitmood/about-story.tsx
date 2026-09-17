@@ -9,12 +9,12 @@ export function AboutStory({ embedded = false }: { embedded?: boolean }) {
   const Heading = embedded ? "h2" : "h1";
   return <article className={`${styles.main} ${embedded ? styles.embedded : ""}`}>
       <div className={styles.intro}>
+        <p className={styles.eyebrow}>{copy.sobretitulo}</p>
+        <Heading id={embedded ? "title-sobre" : undefined} tabIndex={-1}>{copy.titulo_linha_1} <span>{copy.titulo_linha_2}</span></Heading>
         <blockquote className={styles.epigraph}>
           <p>{copy.epigrafe.texto}</p>
           <footer>{copy.epigrafe.atribuicao}</footer>
         </blockquote>
-        <p className={styles.eyebrow}>{copy.sobretitulo}</p>
-        <Heading id={embedded ? "title-sobre" : undefined} tabIndex={-1}>{copy.titulo_linha_1} <span>{copy.titulo_linha_2}</span></Heading>
         <div className={styles.rule} aria-hidden="true" />
       </div>
       <section className={styles.story} aria-label="O cartão que começou a história">

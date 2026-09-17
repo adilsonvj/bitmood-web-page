@@ -3,7 +3,7 @@
 .back { display:inline-flex; align-items:center; gap:10px; min-height:44px; font-size:14px; color:#a8c4dc; }
 .main { max-width:1320px; margin:auto; padding:0 clamp(20px,5vw,72px); }
 .intro { padding:88px 0 62px; }
-.epigraph { max-width:56ch; margin:0 0 48px; padding:0; border:0; text-align:left; }
+.epigraph { max-width:56ch; margin:28px 0 0; padding:0; border:0; text-align:left; }
 .epigraph p { margin:0; font-size:16px; line-height:1.75; font-style:italic; color:rgba(189,203,216,.85); overflow-wrap:anywhere; }
 .epigraph footer { margin-top:10px; font-size:12px; line-height:1.6; color:rgba(168,196,220,.85); }
 .eyebrow { font:12px/1.6 var(--font-mono); letter-spacing:2px; color:#a8c4dc; margin-bottom:24px; }
@@ -35,7 +35,7 @@
   .header { align-items:flex-start; flex-direction:column; gap:8px; padding-top:20px; padding-bottom:16px; }
   .back { font-size:13px; }
   .intro { padding:48px 0 38px; }
-  .epigraph { margin-bottom:30px; }
+  .epigraph { margin-top:22px; }
   .epigraph p { font-size:15px; line-height:1.7; }
   .intro :is(h1,h2) span { display:block; }
   .story { display:flex; flex-direction:column; gap:24px; margin-bottom:48px; }
