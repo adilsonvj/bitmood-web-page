@@ -25,3 +25,19 @@ test('editable page content preserves the fields required by the layout', () => 
     assert.equal(typeof read('paginas/newsletter.json').formulario[field], 'string');
   }
 });
+
+test('publisher pages keep the fields required by the layout', () => {
+  const publisher = read('paginas/publicador.json');
+  assert.match(publisher.contato, /^[^@\s]+@[^@\s]+$/);
+  assert.equal(typeof publisher.atualizado_em, 'string');
+  for (const id of ['inicio','privacidade','termos']) {
+    assert.equal(typeof publisher.links[id], 'string');
+    const page = publisher[id];
+    for (const key of ['titulo_navegador','descricao_busca','sobretitulo','titulo']) assert.equal(typeof page[key], 'string');
+    assert.ok(page.introducao.length > 0);
+    for (const section of page.secoes) {
+      assert.equal(typeof section.titulo, 'string');
+      assert.ok((section.paragrafos ?? section.itens).length > 0);
+    }
+  }
+});

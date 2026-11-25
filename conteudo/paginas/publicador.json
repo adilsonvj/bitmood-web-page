@@ -1,0 +1,136 @@
+{
+  "contato": "bitmood.ai@gmail.com",
+  "atualizado_em": "25 de novembro de 2026",
+  "voltar": "Voltar ao universo BITMOOD",
+  "links": {
+    "inicio": "Sobre a ferramenta",
+    "privacidade": "Política de privacidade",
+    "termos": "Termos de uso"
+  },
+  "inicio": {
+    "titulo_navegador": "BITMOOD Publicador",
+    "descricao_busca": "Ferramenta interna do canal BITMOOD para enviar os próprios vídeos ao YouTube.",
+    "sobretitulo": "FERRAMENTA INTERNA DO CANAL",
+    "titulo": "BITMOOD Publicador",
+    "introducao": [
+      "O BITMOOD Publicador é a ferramenta que o canal BITMOOD usa para enviar os próprios vídeos ao YouTube.",
+      "Ela não é um serviço aberto ao público: só o responsável pelo canal a utiliza."
+    ],
+    "secoes": [
+      {
+        "titulo": "O que ela faz",
+        "itens": [
+          "Envia ao YouTube os vídeos produzidos pelo BITMOOD.",
+          "Define o título, a descrição, as tags, a miniatura e o horário de publicação de cada vídeo.",
+          "Publica o primeiro comentário do canal no próprio vídeo."
+        ]
+      },
+      {
+        "titulo": "Como ela acessa o YouTube",
+        "paragrafos": [
+          "O acesso é feito pela API oficial do YouTube (YouTube API Services), com autorização concedida pelo responsável pelo canal na tela de permissão do Google.",
+          "A ferramenta atua somente no canal BITMOOD."
+        ]
+      },
+      {
+        "titulo": "Quem pode usar",
+        "paragrafos": [
+          "Não há cadastro nem acesso para visitantes. A ferramenta não coleta dados de quem assiste aos vídeos nem de quem visita este site."
+        ]
+      }
+    ]
+  },
+  "privacidade": {
+    "titulo_navegador": "Política de privacidade — BITMOOD Publicador",
+    "descricao_busca": "Quais dados o BITMOOD Publicador acessa no YouTube e como eles são tratados.",
+    "sobretitulo": "BITMOOD PUBLICADOR",
+    "titulo": "Política de privacidade",
+    "introducao": [
+      "Esta política explica quais dados o BITMOOD Publicador acessa e como eles são tratados.",
+      "Ela vale apenas para essa ferramenta, usada pelo responsável pelo canal BITMOOD."
+    ],
+    "secoes": [
+      {
+        "titulo": "Dados acessados",
+        "paragrafos": [
+          "Com a autorização do responsável pelo canal, a ferramenta acessa a conta do YouTube do canal BITMOOD por meio dos YouTube API Services.",
+          "Esse acesso serve para enviar vídeos, definir os dados de cada um (título, descrição, tags, miniatura e horário), consultar a situação do envio e publicar comentários do próprio canal."
+        ]
+      },
+      {
+        "titulo": "Dados guardados",
+        "paragrafos": [
+          "A ferramenta guarda a credencial de acesso concedida pelo Google, protegida por criptografia em um serviço de nuvem sob controle do responsável pelo canal.",
+          "Guarda também registros técnicos de cada envio, como o identificador do vídeo e o horário."
+        ]
+      },
+      {
+        "titulo": "O que a ferramenta não faz",
+        "itens": [
+          "Não coleta dados pessoais de espectadores, inscritos ou visitantes.",
+          "Não vende, não aluga e não compartilha dados com terceiros.",
+          "Não usa os dados para publicidade."
+        ]
+      },
+      {
+        "titulo": "Como revogar o acesso",
+        "paragrafos": [
+          "O responsável pelo canal pode revogar a autorização a qualquer momento na página de permissões da Conta do Google. Depois disso, a ferramenta deixa de ter acesso ao canal."
+        ],
+        "link": "revogar"
+      },
+      {
+        "titulo": "Serviços do YouTube e do Google",
+        "paragrafos": [
+          "A ferramenta usa os YouTube API Services. O uso do YouTube segue os Termos de Serviço do YouTube, e os dados tratados pelo Google seguem a Política de Privacidade do Google."
+        ],
+        "link": "google"
+      },
+      {
+        "titulo": "Contato",
+        "paragrafos": [
+          "Dúvidas sobre esta política podem ser enviadas para o e-mail abaixo."
+        ],
+        "link": "contato"
+      }
+    ]
+  },
+  "termos": {
+    "titulo_navegador": "Termos de uso — BITMOOD Publicador",
+    "descricao_busca": "Termos de uso do BITMOOD Publicador, a ferramenta interna do canal BITMOOD.",
+    "sobretitulo": "BITMOOD PUBLICADOR",
+    "titulo": "Termos de uso",
+    "introducao": [
+      "O BITMOOD Publicador é uma ferramenta interna, de uso exclusivo do responsável pelo canal BITMOOD."
+    ],
+    "secoes": [
+      {
+        "titulo": "Uso",
+        "paragrafos": [
+          "A ferramenta serve apenas para publicar no YouTube os vídeos do próprio canal. Ela não é oferecida a terceiros."
+        ]
+      },
+      {
+        "titulo": "Termos do YouTube",
+        "paragrafos": [
+          "Ao usar a ferramenta, o responsável pelo canal concorda com os Termos de Serviço do YouTube.",
+          "O conteúdo publicado segue as regras do YouTube e é de responsabilidade do canal."
+        ],
+        "link": "youtube"
+      },
+      {
+        "titulo": "Conteúdo",
+        "paragrafos": [
+          "Os vídeos do BITMOOD têm caráter educativo e não são recomendação de investimento."
+        ]
+      },
+      {
+        "titulo": "Alterações e contato",
+        "paragrafos": [
+          "Estes termos podem ser atualizados. A data da última atualização aparece no fim da página. Dúvidas podem ser enviadas para o e-mail abaixo."
+        ],
+        "link": "contato"
+      }
+    ]
+  }
+}
