@@ -12,6 +12,7 @@ Edite estes arquivos pelo lápis do GitHub. Salve na branch `main` (ou faça mer
 | `paginas/sobre.json` | Epígrafe (`epigrafe.texto` e `epigrafe.atribuicao`), título, história, método, citações, legendas, conclusão, botão e metadados da página Sobre mim |
 | `paginas/canais.json` | Título, descrição, nomes dos canais e texto de disponibilidade |
 | `paginas/newsletter.json` | Título, descrição e textos do formulário |
+| `paginas/publicador.json` | Textos das três páginas do BITMOOD Publicador (`/publicador`, `/publicador/privacidade` e `/publicador/termos`), o e-mail de contato e a data de atualização |
 | `pilares/*.json` | Título e descrição de cada um dos sete pilares |
 
 Os títulos exibidos em cada pilar vêm de `pilares/*.json`, não da apresentação geral em `paginas/pilares.json`.
